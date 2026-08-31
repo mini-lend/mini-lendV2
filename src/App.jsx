@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import Landing from "./pages/Landing Page";
+import Dashboard from "./pages/Dashboard";
 import LoadingScreen from "./components/LoadingScreen";
 import WhitePaper from "./white paper/WhitePaper";
 import Documentation from "./docs/Documentation";
@@ -47,6 +48,14 @@ function App() {
           <Route
             path="/"
             element={<Landing />}
+          />
+
+          {/* =================================================
+              DASHBOARD
+          ================================================= */}
+          <Route
+            path="/dashboard"
+            element={<Dashboard />}
           />
 
           {/* =================================================
