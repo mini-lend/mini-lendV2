@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 import Sidebar from "../components/Sidebar";
-import DashboardHeader from "./DashboardHeader";
+import DashboardHeader from "../components/DashboardHeader";
 import PositionOverview from "../components/PositionOverview";
 import CollateralCard from "../components/CollateralCard";
 import DebtCard from "../components/DebtCard";
