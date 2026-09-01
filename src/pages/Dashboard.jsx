@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 import Sidebar from "../components/Sidebar";
-import DashboardHeader from "./DashboardHeader";
+import DashboardHeader from "../components/DashboardHeader";
 import PositionOverview from "../components/PositionOverview";
 import CollateralCard from "../components/CollateralCard";
 import DebtCard from "../components/DebtCard";
@@ -11,6 +11,7 @@ import LiquidityOpportunity from "../components/LiquidityOpportunity";
 import ActionButtons from "../components/ActionButtons";
 import Activity from "../components/Activity";
 import Footer from "../components/Footer";
+
 
 export default function Dashboard() {
   const [mobileOpen, setMobileOpen] = useState(false);

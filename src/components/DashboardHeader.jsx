@@ -1,5 +1,7 @@
-
-import { useState } from "react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useAccount } from "wagmi";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   FiMenu,
   FiBell,
@@ -12,6 +14,10 @@ import {
 
 export default function DashboardHeader({ onMenuClick }) {
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
+  const { address, isConnected } = useAccount();
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleDisconnect = () => {
     // Add your actual wallet disconnect logic here
@@ -19,6 +25,18 @@ export default function DashboardHeader({ onMenuClick }) {
 
     setShowDisconnectModal(false);
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isConnected && !address && location.pathname !== "/") {
+        console.log("Wallet connected:", address);
+        navigate("/");
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  });
+  [isConnected, address, location.pathname, navigate];
 
   return (
     <>
@@ -35,10 +53,8 @@ export default function DashboardHeader({ onMenuClick }) {
         "
       >
         <div className="h-full px-5 sm:px-6 lg:px-8 flex items-center justify-between">
-
           {/* LEFT SIDE */}
           <div className="flex items-center gap-4">
-
             {/* MOBILE MENU */}
             <button
               type="button"
@@ -75,13 +91,10 @@ export default function DashboardHeader({ onMenuClick }) {
                 Dashboard
               </h1>
             </div>
-
           </div>
-
 
           {/* RIGHT SIDE */}
           <div className="flex items-center gap-3">
-
             {/* NETWORK */}
             <div
               className="
@@ -106,11 +119,8 @@ export default function DashboardHeader({ onMenuClick }) {
                 "
               />
 
-              <span className="text-xs font-medium text-white/55">
-                Anvil
-              </span>
+              <span className="text-xs font-medium text-white/55">Anvil</span>
             </div>
-
 
             {/* NOTIFICATION */}
             <button
@@ -149,9 +159,8 @@ export default function DashboardHeader({ onMenuClick }) {
               />
             </button>
 
-
             {/* MOBILE DISCONNECT */}
-            <button
+            {/* <button
               type="button"
               onClick={() => setShowDisconnectModal(true)}
               aria-label="Disconnect wallet"
@@ -175,14 +184,24 @@ export default function DashboardHeader({ onMenuClick }) {
               "
             >
               <FiLogOut size={18} />
-            </button>
-
+            </button> */}
 
             {/* DESKTOP WALLET */}
             <div className="hidden md:flex items-center gap-2">
-
               {/* USER ADDRESS */}
-              <button
+
+              <ConnectButton
+                accountStatus={{
+                  smallScreen: "avatar",
+                  largeScreen: "full",
+                }}
+                showBalance={{
+                  smallScreen: false,
+                  largeScreen: true,
+                }}
+                label="Sign in"
+              />
+              {/* <button
                 type="button"
                 className="
                   flex
@@ -209,11 +228,10 @@ export default function DashboardHeader({ onMenuClick }) {
                 User address
 
                 <FiArrowUpRight className="text-base" />
-              </button>
-
+              </button> */}
 
               {/* DESKTOP DISCONNECT */}
-              <button
+              {/* <button
                 type="button"
                 onClick={() => setShowDisconnectModal(true)}
                 aria-label="Disconnect wallet"
@@ -236,14 +254,11 @@ export default function DashboardHeader({ onMenuClick }) {
                 "
               >
                 <FiLogOut size={18} />
-              </button>
-
+              </button> */}
             </div>
-
           </div>
         </div>
       </header>
-
 
       {/* =====================================================
           DISCONNECT MODAL
@@ -276,10 +291,8 @@ export default function DashboardHeader({ onMenuClick }) {
             "
             onClick={(e) => e.stopPropagation()}
           >
-
             {/* CLOSE */}
             <div className="flex items-start justify-between">
-
               <div
                 className="
                   w-11
@@ -316,13 +329,10 @@ export default function DashboardHeader({ onMenuClick }) {
               >
                 <FiX size={18} />
               </button>
-
             </div>
-
 
             {/* CONTENT */}
             <div className="mt-5">
-
               <h2 className="text-lg font-bold text-white">
                 Disconnect Wallet?
               </h2>
@@ -330,13 +340,10 @@ export default function DashboardHeader({ onMenuClick }) {
               <p className="mt-2 text-sm leading-6 text-white/45">
                 Are you sure you want to disconnect your wallet from MiniLend?
               </p>
-
             </div>
-
 
             {/* ACTIONS */}
             <div className="mt-6 flex gap-3">
-
               <button
                 type="button"
                 onClick={() => setShowDisconnectModal(false)}
@@ -376,13 +383,10 @@ export default function DashboardHeader({ onMenuClick }) {
               >
                 Disconnect
               </button>
-
             </div>
-
           </div>
         </div>
       )}
     </>
   );
 }
-

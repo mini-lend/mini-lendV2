@@ -1,12 +1,12 @@
 
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
+
 import {
   FiGrid,
   FiTrendingUp,
   FiActivity,
   FiHelpCircle,
-  FiLogOut,
   FiX,
   FiAlertCircle,
 } from "react-icons/fi";
@@ -449,7 +449,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
                 transition
               "
             >
-              <FiLogOut size={15} />
+              {/* <FiLogOut size={15} /> */}
             </button>
 
           </div>

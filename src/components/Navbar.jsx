@@ -1,6 +1,7 @@
-
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAccount } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 import {
   FiArrowUpRight,
@@ -11,6 +12,7 @@ import {
 } from "react-icons/fi";
 
 export default function Navbar() {
+  const { address, isConnected } = useAccount();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -109,9 +111,7 @@ export default function Navbar() {
       const navbarOffset = 110;
 
       const position =
-        section.getBoundingClientRect().top +
-        window.scrollY -
-        navbarOffset;
+        section.getBoundingClientRect().top + window.scrollY - navbarOffset;
 
       window.scrollTo({
         top: position,
@@ -153,17 +153,11 @@ export default function Navbar() {
     const navbarOffset = 110;
 
     const position =
-      section.getBoundingClientRect().top +
-      window.scrollY -
-      navbarOffset;
+      section.getBoundingClientRect().top + window.scrollY - navbarOffset;
 
     setActiveSection(id);
 
-    window.history.replaceState(
-      null,
-      "",
-      id === "home" ? "/" : `/#${id}`
-    );
+    window.history.replaceState(null, "", id === "home" ? "/" : `/#${id}`);
 
     window.scrollTo({
       top: position,
@@ -188,6 +182,24 @@ export default function Navbar() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  /*
+  ============================================================
+  REDIRECT WHEN CNNECTED
+  ============================================================
+  */
+  useEffect(() => {
+    if (location.pathname !== "/") return;
+
+    const timer = setTimeout(() => {
+      if (address && isConnected) {
+        navigate("/dashboard");
+        console.log(`Connected account: ${address}`);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [address, isConnected, location.pathname, navigate]);
 
   // ============================================================
   // NAVBAR
@@ -231,7 +243,6 @@ export default function Navbar() {
       ====================================================== */}
 
       <div className="relative flex h-[64px] items-center px-4 sm:px-6 lg:px-7">
-
         {/* =================================================
             LOGO
         ================================================== */}
@@ -248,7 +259,6 @@ export default function Navbar() {
           "
         >
           <div className="relative">
-
             <img
               src="/favicon.png"
               alt="MiniLend Logo"
@@ -272,11 +282,9 @@ export default function Navbar() {
                 group-hover:translate-y-2
               "
             />
-
           </div>
 
           <div className="leading-none text-left">
-
             <span className="block text-sm font-bold tracking-[0.12em] text-white">
               MINI
             </span>
@@ -284,10 +292,8 @@ export default function Navbar() {
             <span className="block text-sm font-bold tracking-[0.12em] text-[#6DD054]">
               LEND
             </span>
-
           </div>
         </button>
-
 
         {/* =================================================
             CENTER MENU
@@ -370,13 +376,11 @@ export default function Navbar() {
           })}
         </nav>
 
-
         {/* =================================================
             RIGHT SIDE
         ================================================== */}
 
         <div className="ml-auto flex items-center gap-1.5">
-
           {/* =================================================
               WHITE PAPER - DESKTOP
           ================================================== */}
@@ -411,9 +415,7 @@ export default function Navbar() {
                 group-hover:text-[#6DD054]
               "
             />
-
             White Paper
-
             <FiArrowUpRight
               className="
                 text-white/20
@@ -425,7 +427,6 @@ export default function Navbar() {
               "
             />
           </Link>
-
 
           {/* =================================================
               ANVIL
@@ -456,12 +457,21 @@ export default function Navbar() {
             <span>Anvil</span>
           </div>
 
-
           {/* =================================================
               CONNECT WALLET
           ================================================== */}
-
-          <button
+          <ConnectButton
+            accountStatus={{
+              smallScreen: "avatar",
+              largeScreen: "full",
+            }}
+            showBalance={{
+              smallScreen: false,
+              largeScreen: true,
+            }}
+            label="Sign in"
+          />
+          {/* <button
             id="headerConnect"
             type="button"
             className="
@@ -521,8 +531,7 @@ export default function Navbar() {
                 group-hover:translate-x-full
               "
             />
-          </button>
-
+          </button> */}
 
           {/* =================================================
               MOBILE MENU BUTTON
@@ -531,11 +540,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setMobileOpen((prev) => !prev)}
-            aria-label={
-              mobileOpen
-                ? "Close navigation"
-                : "Open navigation"
-            }
+            aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
             aria-expanded={mobileOpen}
             className="
               flex
@@ -561,10 +566,8 @@ export default function Navbar() {
               <FiMenu className="text-xl" />
             )}
           </button>
-
         </div>
       </div>
-
 
       {/* =====================================================
           MOBILE MENU
@@ -586,26 +589,19 @@ export default function Navbar() {
         `}
       >
         <div className="overflow-hidden">
-
           <div className="px-4 pb-4">
-
             <div className="border-t border-white/[0.07] pt-3">
-
               {/* MOBILE NAVIGATION */}
 
               <div className="space-y-1">
-
                 {navItems.map((item) => {
-                  const isActive =
-                    activeSection === item.id;
+                  const isActive = activeSection === item.id;
 
                   return (
                     <button
                       key={item.id}
                       type="button"
-                      onClick={() =>
-                        scrollToSection(item.id)
-                      }
+                      onClick={() => scrollToSection(item.id)}
                       className={`
                         group
                         flex
@@ -657,7 +653,6 @@ export default function Navbar() {
                   );
                 })}
 
-
                 {/* =================================================
                     WHITE PAPER - MOBILE
                 ================================================== */}
@@ -686,15 +681,12 @@ export default function Navbar() {
                   "
                 >
                   <span className="flex items-center gap-3">
-
                     <FiFileText
                       className="
                         text-[#6DD054]
                       "
                     />
-
                     White Paper
-
                   </span>
 
                   <FiArrowUpRight
@@ -704,11 +696,8 @@ export default function Navbar() {
                       group-hover:text-[#6DD054]
                     "
                   />
-
                 </Link>
-
               </div>
-
 
               {/* MOBILE NETWORK */}
 
@@ -724,12 +713,9 @@ export default function Navbar() {
                   py-3
                 "
               >
-                <span className="text-xs text-white/35">
-                  Network
-                </span>
+                <span className="text-xs text-white/35">Network</span>
 
                 <span className="flex items-center gap-2 text-xs text-[#6DD054]">
-
                   <FiCircle
                     className="
                       animate-pulse
@@ -738,12 +724,9 @@ export default function Navbar() {
                     "
                     fill="#6DD054"
                   />
-
                   Anvil
-
                 </span>
               </div>
-
 
               {/* MOBILE CONNECT WALLET */}
 
@@ -772,7 +755,6 @@ export default function Navbar() {
                 "
               >
                 Connect Wallet
-
                 <FiArrowUpRight
                   className="
                     transition-transform
@@ -782,17 +764,10 @@ export default function Navbar() {
                   "
                 />
               </button>
-
             </div>
-
           </div>
-
         </div>
       </div>
-
     </header>
   );
 }
-
-
-

@@ -1,8 +1,10 @@
-
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import Landing from "./pages/Landing Page";
+import Dashboard from "./pages/Dashboard";
+import Markets from "./pages/Markets";
+import Activity from "./components/Activity";
 import LoadingScreen from "./components/LoadingScreen";
 import WhitePaper from "./white paper/WhitePaper";
 import Documentation from "./docs/Documentation";
@@ -13,6 +15,7 @@ import Documentation from "./docs/Documentation";
 import PrivacyPolicy from "./legal/PrivacyPolicy";
 import TermsOfUse from "./legal/TermsOfUse";
 import RiskDisclosure from "./legal/RiskDisclosure";
+import HelpCenter from "./help/HelpCenter";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -22,11 +25,7 @@ function App() {
       {/* =====================================================
           LOADING SCREEN
       ====================================================== */}
-      {loading && (
-        <LoadingScreen
-          onComplete={() => setLoading(false)}
-        />
-      )}
+      {loading && <LoadingScreen onComplete={() => setLoading(false)} />}
 
       {/* =====================================================
           PAGE CONTENT
@@ -40,55 +39,55 @@ function App() {
         `}
       >
         <Routes>
-
           {/* =================================================
               LANDING PAGE
           ================================================= */}
-          <Route
-            path="/"
-            element={<Landing />}
-          />
+          <Route path="/" element={<Landing />} />
+
+          {/* =================================================
+              DASHBOARD
+          ================================================= */}
+          <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* =================================================
+              MARKETS
+          ================================================= */}
+          <Route path="/markets" element={<Markets />} />
+
+          {/* =================================================
+              ACTIVITY
+          ================================================= */}
+          <Route path="/activity" element={<Activity />} />
+
+          {/* =================================================
+              HELP PAGE
+          ================================================= */}
+          <Route path="/help" element={<HelpCenter />} />
 
           {/* =================================================
               WHITE PAPER
           ================================================= */}
-          <Route
-            path="/whitepaper"
-            element={<WhitePaper />}
-          />
+          <Route path="/whitepaper" element={<WhitePaper />} />
 
           {/* =================================================
               DOCUMENTATION
           ================================================= */}
-          <Route
-            path="/docs"
-            element={<Documentation />}
-          />
+          <Route path="/docs" element={<Documentation />} />
 
           {/* =================================================
               PRIVACY POLICY
           ================================================= */}
-          <Route
-            path="/privacy"
-            element={<PrivacyPolicy />}
-          />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
 
           {/* =================================================
               TERMS OF USE
           ================================================= */}
-          <Route
-            path="/terms"
-            element={<TermsOfUse />}
-          />
+          <Route path="/terms" element={<TermsOfUse />} />
 
           {/* =================================================
               RISK DISCLOSURE
           ================================================= */}
-          <Route
-            path="/risk-disclosure"
-            element={<RiskDisclosure />}
-          />
-
+          <Route path="/risk-disclosure" element={<RiskDisclosure />} />
         </Routes>
       </div>
     </>
@@ -96,4 +95,3 @@ function App() {
 }
 
 export default App;
-
