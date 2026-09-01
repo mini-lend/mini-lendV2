@@ -333,7 +333,7 @@ export default function Footer() {
               </a>
 
               <a
-                href="mailto:hello@minilend.eth"
+                href="mailto:minilend9@gmail.com"
                 aria-label="Email"
                 className="
                   flex
