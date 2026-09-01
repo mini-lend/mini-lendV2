@@ -449,7 +449,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
                 transition
               "
             >
-              <FiLogOut size={15} />
+              {/* <FiLogOut size={15} /> */}
             </button>
 
           </div>
