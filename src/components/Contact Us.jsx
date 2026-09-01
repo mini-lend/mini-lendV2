@@ -1,4 +1,6 @@
-import { useState } from "react";
+
+import { useRef, useState } from "react";
+import emailjs from "@emailjs/browser";
 import {
   FiArrowRight,
   FiMail,
@@ -7,10 +9,11 @@ import {
   FiCheckCircle,
   FiClock,
   FiShield,
-  FiX,
 } from "react-icons/fi";
 
 export default function ContactUs() {
+  const form = useRef(null);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -19,6 +22,7 @@ export default function ContactUs() {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,17 +33,42 @@ export default function ContactUs() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setSubmitted(true);
+    if (!form.current) {
+      alert("Form is not ready. Please refresh the page and try again.");
+      return;
+    }
 
-    setFormData({
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-    });
+    setSending(true);
+
+    try {
+      await emailjs.sendForm(
+        "service_yidtfre",
+        "template_td89fpt",
+        form.current,
+        "yMoZdut8T1FiKdGgv"
+      );
+
+      setSubmitted(true);
+
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("EmailJS Error:", error);
+
+      alert(
+        error?.text ||
+          "Sorry, your message could not be sent. Please check your EmailJS configuration and try again."
+      );
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -47,18 +76,12 @@ export default function ContactUs() {
       id="contact"
       className="relative overflow-hidden bg-[#080908] py-24 text-white"
     >
-      {/* =====================================================
-          BACKGROUND GLOW
-      ====================================================== */}
+      {/* BACKGROUND GLOW */}
       <div className="pointer-events-none absolute inset-0">
-
         <div
           className="
-            absolute
-            left-[5%]
-            top-[20%]
-            h-[300px]
-            w-[300px]
+            absolute left-[5%] top-[20%]
+            h-[300px] w-[300px]
             rounded-full
             bg-[#6DD054]/[0.06]
             blur-[120px]
@@ -67,80 +90,49 @@ export default function ContactUs() {
 
         <div
           className="
-            absolute
-            right-[5%]
-            bottom-[10%]
-            h-[350px]
-            w-[350px]
+            absolute bottom-[10%] right-[5%]
+            h-[350px] w-[350px]
             rounded-full
             bg-[#6DD054]/[0.05]
             blur-[130px]
           "
         />
-
       </div>
 
-
-      {/* =====================================================
-          CONTAINER
-      ====================================================== */}
+      {/* CONTAINER */}
       <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-
-        {/* =====================================================
-            SECTION HEADER
-        ====================================================== */}
+        {/* SECTION HEADER */}
         <div className="mx-auto mb-14 max-w-2xl text-center">
-
-          {/* LABEL */}
           <div
             className="
-              inline-flex
-              items-center
-              gap-2
+              inline-flex items-center gap-2
               rounded-full
-              border
-              border-[#6DD054]/20
+              border border-[#6DD054]/20
               bg-[#6DD054]/[0.05]
-              px-4
-              py-2
-              text-xs
-              font-medium
+              px-4 py-2
+              text-xs font-medium
               text-[#6DD054]
             "
           >
             <FiMessageCircle />
-
             Contact MiniLend
           </div>
 
-
-          {/* HEADING */}
           <h2
             className="
-              logo
-              mt-6
-              text-3xl
-              font-semibold
-              leading-tight
-              sm:text-4xl
-              md:text-5xl
+              logo mt-6
+              text-3xl font-semibold leading-tight
+              sm:text-4xl md:text-5xl
             "
           >
             We're here to help you
-            <span className="text-[#6DD054]">
-              {" "}move forward.
-            </span>
+            <span className="text-[#6DD054]"> move forward.</span>
           </h2>
 
-
-          {/* DESCRIPTION */}
           <p
             className="
-              logo
-              mt-5
-              text-sm
-              leading-7
-              text-white/45
+              logo mt-5
+              text-sm leading-7 text-white/45
               sm:text-base
             "
           >
@@ -148,32 +140,21 @@ export default function ContactUs() {
             supported assets, or the protocol? Send us a message
             and our team will get back to you.
           </p>
-
         </div>
 
-
-        {/* =====================================================
-            MAIN CONTACT GRID
-        ====================================================== */}
+        {/* MAIN CONTACT GRID */}
         <div className="grid gap-6 lg:grid-cols-[0.75fr_1.25fr]">
-
-          {/* =================================================
-              LEFT CONTACT INFORMATION
-          ================================================== */}
+          {/* LEFT SIDE */}
           <div className="flex flex-col gap-5">
-
             {/* CONTACT CARD */}
             <div
               className="
                 rounded-3xl
-                border
-                border-white/[0.08]
+                border border-white/[0.08]
                 bg-white/[0.02]
-                p-6
-                sm:p-7
+                p-6 sm:p-7
               "
             >
-
               <p className="logo text-xs uppercase tracking-[0.2em] text-[#6DD054]">
                 Get in touch
               </p>
@@ -188,30 +169,20 @@ export default function ContactUs() {
                 from you.
               </p>
 
-
               {/* EMAIL */}
               <div
                 className="
-                  mt-7
-                  flex
-                  items-center
-                  gap-4
+                  mt-7 flex items-center gap-4
                   rounded-2xl
-                  border
-                  border-white/[0.07]
+                  border border-white/[0.07]
                   bg-black/10
                   p-4
                 "
               >
-
                 <div
                   className="
-                    flex
-                    h-11
-                    w-11
-                    shrink-0
-                    items-center
-                    justify-center
+                    flex h-11 w-11 shrink-0
+                    items-center justify-center
                     rounded-xl
                     bg-[#6DD054]/10
                     text-[#6DD054]
@@ -226,48 +197,32 @@ export default function ContactUs() {
                   </p>
 
                   <a
-                    href="mailto:support@minilend.io"
+                    href="mailto:minilend9@gmail.com"
                     className="
-                      logo
-                      mt-1
-                      block
-                      text-sm
-                      font-medium
-                      text-white/80
-                      transition
+                      logo mt-1 block text-sm font-medium
+                      text-white/80 transition
                       hover:text-[#6DD054]
                     "
                   >
-                    support@minilend.io
+                    minilend9@gmail.com
                   </a>
                 </div>
-
               </div>
-
 
               {/* RESPONSE TIME */}
               <div
                 className="
-                  mt-3
-                  flex
-                  items-center
-                  gap-4
+                  mt-3 flex items-center gap-4
                   rounded-2xl
-                  border
-                  border-white/[0.07]
+                  border border-white/[0.07]
                   bg-black/10
                   p-4
                 "
               >
-
                 <div
                   className="
-                    flex
-                    h-11
-                    w-11
-                    shrink-0
-                    items-center
-                    justify-center
+                    flex h-11 w-11 shrink-0
+                    items-center justify-center
                     rounded-xl
                     bg-[#6DD054]/10
                     text-[#6DD054]
@@ -285,34 +240,23 @@ export default function ContactUs() {
                     Usually within 24 hours
                   </p>
                 </div>
-
               </div>
-
             </div>
-
 
             {/* SECURITY CARD */}
             <div
               className="
                 rounded-3xl
-                border
-                border-[#6DD054]/15
+                border border-[#6DD054]/15
                 bg-[#6DD054]/[0.04]
-                p-6
-                sm:p-7
+                p-6 sm:p-7
               "
             >
-
               <div className="flex items-start gap-4">
-
                 <div
                   className="
-                    flex
-                    h-11
-                    w-11
-                    shrink-0
-                    items-center
-                    justify-center
+                    flex h-11 w-11 shrink-0
+                    items-center justify-center
                     rounded-xl
                     bg-[#6DD054]/10
                     text-[#6DD054]
@@ -322,7 +266,6 @@ export default function ContactUs() {
                 </div>
 
                 <div>
-
                   <h3 className="logo text-sm font-semibold text-white">
                     Your privacy matters
                   </h3>
@@ -332,44 +275,32 @@ export default function ContactUs() {
                     phrases, or sensitive wallet credentials with
                     anyone claiming to provide MiniLend support.
                   </p>
-
                 </div>
-
               </div>
-
             </div>
-
 
             {/* QUICK LINKS */}
             <div
               className="
                 rounded-3xl
-                border
-                border-white/[0.08]
+                border border-white/[0.08]
                 bg-white/[0.02]
                 p-6
               "
             >
-
               <p className="logo text-xs uppercase tracking-[0.2em] text-white/30">
                 Before contacting us
               </p>
 
               <div className="mt-4 space-y-3">
-
                 <a
                   href="#faq"
                   className="
-                    group
-                    flex
-                    items-center
-                    justify-between
+                    group flex items-center justify-between
                     rounded-xl
-                    border
-                    border-white/[0.06]
+                    border border-white/[0.06]
                     bg-white/[0.015]
-                    px-4
-                    py-3
+                    px-4 py-3
                     transition
                     hover:border-[#6DD054]/20
                     hover:bg-[#6DD054]/[0.04]
@@ -381,28 +312,21 @@ export default function ContactUs() {
 
                   <FiArrowRight
                     className="
-                      text-white/25
-                      transition
+                      text-white/25 transition
                       group-hover:translate-x-1
                       group-hover:text-[#6DD054]
                     "
                   />
                 </a>
 
-
                 <a
                   href="#how-it-works"
                   className="
-                    group
-                    flex
-                    items-center
-                    justify-between
+                    group flex items-center justify-between
                     rounded-xl
-                    border
-                    border-white/[0.06]
+                    border border-white/[0.06]
                     bg-white/[0.015]
-                    px-4
-                    py-3
+                    px-4 py-3
                     transition
                     hover:border-[#6DD054]/20
                     hover:bg-[#6DD054]/[0.04]
@@ -414,41 +338,29 @@ export default function ContactUs() {
 
                   <FiArrowRight
                     className="
-                      text-white/25
-                      transition
+                      text-white/25 transition
                       group-hover:translate-x-1
                       group-hover:text-[#6DD054]
                     "
                   />
                 </a>
-
               </div>
-
             </div>
-
           </div>
 
-
-          {/* =================================================
-              RIGHT FORM
-          ================================================== */}
+          {/* RIGHT FORM */}
           <div
             className="
-              relative
-              rounded-3xl
-              border
-              border-white/[0.08]
+              relative rounded-3xl
+              border border-white/[0.08]
               bg-white/[0.025]
               p-6
               shadow-[0_30px_100px_rgba(0,0,0,0.25)]
-              sm:p-8
-              lg:p-10
+              sm:p-8 lg:p-10
             "
           >
-
             {/* FORM HEADER */}
             <div className="mb-7">
-
               <p className="logo text-xs uppercase tracking-[0.2em] text-[#6DD054]">
                 Send a message
               </p>
@@ -460,30 +372,21 @@ export default function ContactUs() {
               <p className="logo mt-2 text-sm text-white/35">
                 Fill out the form below and we'll get back to you.
               </p>
-
             </div>
 
-
-            {/* SUCCESS MESSAGE */}
+            {/* SUCCESS */}
             {submitted ? (
               <div
                 className="
-                  flex
-                  min-h-[400px]
-                  flex-col
-                  items-center
-                  justify-center
+                  flex min-h-[400px]
+                  flex-col items-center justify-center
                   text-center
                 "
               >
-
                 <div
                   className="
-                    flex
-                    h-16
-                    w-16
-                    items-center
-                    justify-center
+                    flex h-16 w-16
+                    items-center justify-center
                     rounded-2xl
                     bg-[#6DD054]/10
                   "
@@ -504,18 +407,11 @@ export default function ContactUs() {
                   type="button"
                   onClick={() => setSubmitted(false)}
                   className="
-                    logo
-                    mt-7
-                    flex
-                    items-center
-                    gap-2
+                    logo mt-7 flex items-center gap-2
                     rounded-xl
-                    border
-                    border-[#6DD054]/30
-                    px-5
-                    py-3
-                    text-xs
-                    font-semibold
+                    border border-[#6DD054]/30
+                    px-5 py-3
+                    text-xs font-semibold
                     text-[#6DD054]
                     transition
                     hover:bg-[#6DD054]
@@ -523,21 +419,16 @@ export default function ContactUs() {
                   "
                 >
                   Send another message
-
                   <FiArrowRight />
                 </button>
-
               </div>
             ) : (
-
-              <form onSubmit={handleSubmit}>
-
+              /* FORM */
+              <form ref={form} onSubmit={handleSubmit}>
                 {/* NAME + EMAIL */}
                 <div className="grid gap-5 sm:grid-cols-2">
-
                   {/* NAME */}
                   <div>
-
                     <label
                       htmlFor="name"
                       className="logo mb-2 block text-xs font-medium text-white/55"
@@ -553,17 +444,13 @@ export default function ContactUs() {
                       onChange={handleChange}
                       placeholder="Enter your name"
                       required
+                      autoComplete="name"
                       className="
-                        logo
-                        h-12
-                        w-full
-                        rounded-xl
-                        border
-                        border-white/[0.09]
+                        logo h-12 w-full rounded-xl
+                        border border-white/[0.09]
                         bg-black/20
                         px-4
-                        text-sm
-                        text-white
+                        text-sm text-white
                         outline-none
                         placeholder:text-white/20
                         transition
@@ -571,13 +458,10 @@ export default function ContactUs() {
                         focus:bg-[#6DD054]/[0.025]
                       "
                     />
-
                   </div>
-
 
                   {/* EMAIL */}
                   <div>
-
                     <label
                       htmlFor="email"
                       className="logo mb-2 block text-xs font-medium text-white/55"
@@ -593,17 +477,13 @@ export default function ContactUs() {
                       onChange={handleChange}
                       placeholder="you@example.com"
                       required
+                      autoComplete="email"
                       className="
-                        logo
-                        h-12
-                        w-full
-                        rounded-xl
-                        border
-                        border-white/[0.09]
+                        logo h-12 w-full rounded-xl
+                        border border-white/[0.09]
                         bg-black/20
                         px-4
-                        text-sm
-                        text-white
+                        text-sm text-white
                         outline-none
                         placeholder:text-white/20
                         transition
@@ -611,15 +491,11 @@ export default function ContactUs() {
                         focus:bg-[#6DD054]/[0.025]
                       "
                     />
-
                   </div>
-
                 </div>
-
 
                 {/* SUBJECT */}
                 <div className="mt-5">
-
                   <label
                     htmlFor="subject"
                     className="logo mb-2 block text-xs font-medium text-white/55"
@@ -634,62 +510,52 @@ export default function ContactUs() {
                     onChange={handleChange}
                     required
                     className="
-                      logo
-                      h-12
-                      w-full
-                      rounded-xl
-                      border
-                      border-white/[0.09]
+                      logo h-12 w-full rounded-xl
+                      border border-white/[0.09]
                       bg-[#101210]
                       px-4
-                      text-sm
-                      text-white/70
+                      text-sm text-white/70
                       outline-none
                       transition
                       focus:border-[#6DD054]/40
                     "
                   >
-
                     <option value="" disabled>
                       Select a topic
                     </option>
 
-                    <option value="general">
+                    <option value="General question">
                       General question
                     </option>
 
-                    <option value="wallet">
+                    <option value="Wallet / connection issue">
                       Wallet / connection issue
                     </option>
 
-                    <option value="borrowing">
+                    <option value="Borrowing">
                       Borrowing
                     </option>
 
-                    <option value="repayment">
+                    <option value="Repayment">
                       Repayment
                     </option>
 
-                    <option value="assets">
+                    <option value="Supported assets">
                       Supported assets
                     </option>
 
-                    <option value="technical">
+                    <option value="Technical issue">
                       Technical issue
                     </option>
 
-                    <option value="other">
+                    <option value="Other">
                       Other
                     </option>
-
                   </select>
-
                 </div>
-
 
                 {/* MESSAGE */}
                 <div className="mt-5">
-
                   <label
                     htmlFor="message"
                     className="logo mb-2 block text-xs font-medium text-white/55"
@@ -706,18 +572,11 @@ export default function ContactUs() {
                     required
                     rows={6}
                     className="
-                      logo
-                      w-full
-                      resize-none
-                      rounded-xl
-                      border
-                      border-white/[0.09]
+                      logo w-full resize-none rounded-xl
+                      border border-white/[0.09]
                       bg-black/20
-                      px-4
-                      py-4
-                      text-sm
-                      leading-6
-                      text-white
+                      px-4 py-4
+                      text-sm leading-6 text-white
                       outline-none
                       placeholder:text-white/20
                       transition
@@ -725,85 +584,69 @@ export default function ContactUs() {
                       focus:bg-[#6DD054]/[0.025]
                     "
                   />
-
                 </div>
-
 
                 {/* SUBMIT */}
                 <button
                   type="submit"
+                  disabled={sending}
                   className="
-                    group
-                    logo
-                    mt-6
-                    flex
-                    h-12
-                    w-full
-                    items-center
-                    justify-center
-                    gap-2.5
+                    group logo mt-6
+                    flex h-12 w-full
+                    items-center justify-center gap-2.5
                     rounded-xl
                     bg-[#6DD054]
-                    text-sm
-                    font-bold
+                    text-sm font-bold
                     text-[#0b1609]
                     shadow-[0_10px_35px_rgba(109,208,84,0.12)]
-                    transition-all
-                    duration-300
+                    transition-all duration-300
                     hover:-translate-y-0.5
                     hover:bg-[#7ae360]
                     hover:shadow-[0_14px_40px_rgba(109,208,84,0.22)]
                     active:scale-[0.98]
+                    disabled:cursor-not-allowed
+                    disabled:opacity-60
                   "
                 >
-                  Send Message
+                  {sending ? (
+                    "Sending..."
+                  ) : (
+                    <>
+                      Send Message
 
-                  <FiSend
-                    className="
-                      transition-transform
-                      duration-300
-                      group-hover:translate-x-1
-                      group-hover:-translate-y-0.5
-                    "
-                  />
-
+                      <FiSend
+                        className="
+                          transition-transform
+                          duration-300
+                          group-hover:translate-x-1
+                          group-hover:-translate-y-0.5
+                        "
+                      />
+                    </>
+                  )}
                 </button>
 
-
-                {/* FORM NOTE */}
+                {/* NOTE */}
                 <p className="logo mt-4 text-center text-[10px] leading-5 text-white/25">
                   We will only use your information to respond to your
                   request. Never share your private keys or recovery phrase.
                 </p>
-
               </form>
-
             )}
-
           </div>
-
         </div>
 
-
-        {/* =====================================================
-            BOTTOM CTA
-        ====================================================== */}
+        {/* BOTTOM CTA */}
         <div
           className="
-            mt-16
-            overflow-hidden
-            rounded-3xl
-            border
-            border-[#6DD054]/15
+            mt-16 overflow-hidden rounded-3xl
+            border border-[#6DD054]/15
             bg-[#6DD054]/[0.035]
-            p-7
-            text-center
+            p-7 text-center
             sm:p-10
           "
         >
-
           <div className="mx-auto max-w-2xl">
-
             <p className="logo text-xs uppercase tracking-[0.2em] text-[#6DD054]">
               Need help getting started?
             </p>
@@ -820,22 +663,14 @@ export default function ContactUs() {
             <a
               href="#home"
               className="
-                group
-                logo
-                mt-6
-                inline-flex
-                items-center
-                gap-2
+                group logo mt-6 inline-flex
+                items-center gap-2
                 rounded-xl
-                border
-                border-[#6DD054]/40
-                px-6
-                py-3
-                text-xs
-                font-semibold
+                border border-[#6DD054]/40
+                px-6 py-3
+                text-xs font-semibold
                 text-[#6DD054]
-                transition-all
-                duration-300
+                transition-all duration-300
                 hover:bg-[#6DD054]
                 hover:text-black
               "
@@ -844,18 +679,15 @@ export default function ContactUs() {
 
               <FiArrowRight
                 className="
-                  transition-transform
-                  duration-300
+                  transition-transform duration-300
                   group-hover:translate-x-1
                 "
               />
             </a>
-
           </div>
-
         </div>
-
       </div>
     </section>
   );
 }
+
