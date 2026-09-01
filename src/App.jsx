@@ -15,6 +15,7 @@ import Documentation from "./docs/Documentation";
 import PrivacyPolicy from "./legal/PrivacyPolicy";
 import TermsOfUse from "./legal/TermsOfUse";
 import RiskDisclosure from "./legal/RiskDisclosure";
+import HelpCenter from "./help/HelpCenter";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -57,6 +58,11 @@ function App() {
               ACTIVITY
           ================================================= */}
           <Route path="/activity" element={<Activity />} />
+
+          {/* =================================================
+              HELP PAGE
+          ================================================= */}
+          <Route path="/help" element={<HelpCenter />} />
 
           {/* =================================================
               WHITE PAPER
