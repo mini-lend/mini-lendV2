@@ -12,6 +12,7 @@ import ActionButtons from "../components/ActionButtons";
 import Activity from "../components/Activity";
 import Footer from "../components/Footer";
 
+
 export default function Dashboard() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
