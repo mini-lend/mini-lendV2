@@ -19,7 +19,7 @@ export default function Hero() {
     "without selling.",
     "against your crypto.",
     "while keeping rewards.",
-    "when you need it.",
+    "when you need it",
     "without middlemen.",
   ];
 
