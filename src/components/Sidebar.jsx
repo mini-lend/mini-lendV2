@@ -1,12 +1,12 @@
 
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
+
 import {
   FiGrid,
   FiTrendingUp,
   FiActivity,
   FiHelpCircle,
-  FiLogOut,
   FiX,
   FiAlertCircle,
 } from "react-icons/fi";
