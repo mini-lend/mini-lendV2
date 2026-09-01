@@ -90,7 +90,7 @@ export default function HowItWorks() {
           >
             <FiTrendingUp />
 
-            Simple. Secure. 
+            Simple. Secure. Decentralized.
           </div>
 
           {/* Heading */}
