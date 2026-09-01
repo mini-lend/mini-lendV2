@@ -81,7 +81,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
           h-screen
           w-64
           bg-[#0d0d0d]
-          border-r
+            border-r
           border-white/10
           flex
           flex-col
