@@ -5,3 +5,5 @@ export function walletStatus() {
   const { isConnected, address } = useAccount();
   return [isConnected, address];
 }
+
+{}

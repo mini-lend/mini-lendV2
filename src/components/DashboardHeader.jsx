@@ -1,6 +1,7 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   FiMenu,
   FiBell,
@@ -15,6 +16,9 @@ export default function DashboardHeader({ onMenuClick }) {
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
   const { address, isConnected } = useAccount();
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const handleDisconnect = () => {
     // Add your actual wallet disconnect logic here
     console.log("Wallet disconnected");
@@ -23,10 +27,16 @@ export default function DashboardHeader({ onMenuClick }) {
   };
 
   useEffect(() => {
-    if (isConnected && address){
-      console.log("Wallet connected:", address);
-    }
-  }); [isConnected]
+    const timer = setTimeout(() => {
+      if (!isConnected && !address && location.pathname !== "/") {
+        console.log("Wallet connected:", address);
+        navigate("/");
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  });
+  [isConnected, address, location.pathname, navigate];
 
   return (
     <>
