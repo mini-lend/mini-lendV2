@@ -46,7 +46,7 @@ export default function ContactUs() {
     try {
       await emailjs.sendForm(
         "service_yidtfre",
-        "template_td89fpt",
+        "template_26c9qvh",
         form.current,
         "yMoZdut8T1FiKdGgv"
       );
