@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+
+import { useState } from "react";
 import emailjs from "@emailjs/browser";
 import {
   FiArrowRight,
@@ -11,8 +12,6 @@ import {
 } from "react-icons/fi";
 
 export default function ContactUs() {
-  const form = useRef(null);
-
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -45,39 +44,22 @@ export default function ContactUs() {
       return;
     }
 
-    if (!form.current) {
-      alert("Form is not ready. Please refresh the page and try again.");
-      return;
-    }
-
     setSending(true);
 
     try {
       // =====================================================
-      // CREATE CURRENT DATE + TIME
-      // =====================================================
-      const currentTime = new Date().toLocaleString("en-NG", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      });
-
-      // =====================================================
-      // PUT TIME INTO THE HIDDEN FORM FIELD
-      // =====================================================
-      const timeField = form.current.querySelector('input[name="time"]');
-
-      if (timeField) {
-        timeField.value = currentTime;
-      }
-
-      // =====================================================
       // 1. SEND USER MESSAGE TO MINILEND
       // =====================================================
-      await emailjs.sendForm(
+      await emailjs.send(
         "service_yidtfre",
         "template_td89fpt",
-        form.current,
-        "yMoZdut8T1FiKdGgv",
+        {
+          name: formData.name,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+        },
+        "yMoZdut8T1FiKdGgv"
       );
 
       // =====================================================
@@ -92,7 +74,7 @@ export default function ContactUs() {
           subject: formData.subject,
           message: formData.message,
         },
-        "yMoZdut8T1FiKdGgv",
+        "yMoZdut8T1FiKdGgv"
       );
 
       // =====================================================
@@ -111,7 +93,7 @@ export default function ContactUs() {
 
       alert(
         error?.text ||
-          "Sorry, your message could not be sent. Please check your EmailJS configuration and try again.",
+          "Sorry, your message could not be sent. Please check your EmailJS configuration and try again."
       );
     } finally {
       setSending(false);
@@ -149,6 +131,7 @@ export default function ContactUs() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+
         {/* =====================================================
             HEADER
         ===================================================== */}
@@ -186,9 +169,9 @@ export default function ContactUs() {
               sm:text-base
             "
           >
-            Have a question about MiniLend, your lending position, supported
-            assets, or the protocol? Send us a message and our team will get
-            back to you.
+            Have a question about MiniLend, your lending position,
+            supported assets, or the protocol? Send us a message
+            and our team will get back to you.
           </p>
         </div>
 
@@ -196,10 +179,12 @@ export default function ContactUs() {
             MAIN GRID
         ===================================================== */}
         <div className="grid gap-6 lg:grid-cols-[0.75fr_1.25fr]">
+
           {/* ===================================================
               LEFT SIDE
           =================================================== */}
           <div className="flex flex-col gap-5">
+
             {/* GET IN TOUCH */}
             <div
               className="
@@ -218,8 +203,9 @@ export default function ContactUs() {
               </h3>
 
               <p className="logo mt-3 text-sm leading-6 text-white/40">
-                Whether you're experiencing an issue or simply want to learn
-                more about MiniLend, we're happy to hear from you.
+                Whether you're experiencing an issue or simply want
+                to learn more about MiniLend, we're happy to hear
+                from you.
               </p>
 
               {/* EMAIL */}
@@ -324,9 +310,9 @@ export default function ContactUs() {
                   </h3>
 
                   <p className="logo mt-2 text-xs leading-6 text-white/40">
-                    Please never share your private keys, recovery phrases, or
-                    sensitive wallet credentials with anyone claiming to provide
-                    MiniLend support.
+                    Please never share your private keys, recovery
+                    phrases, or sensitive wallet credentials with
+                    anyone claiming to provide MiniLend support.
                   </p>
                 </div>
               </div>
@@ -455,8 +441,8 @@ export default function ContactUs() {
                 </h3>
 
                 <p className="logo mt-3 max-w-sm text-sm leading-6 text-white/40">
-                  Thank you for contacting MiniLend. Our team will review your
-                  message and get back to you shortly.
+                  Thank you for contacting MiniLend. Our team will
+                  review your message and get back to you shortly.
                   <br />
                   <br />
                   You should also receive a confirmation email.
@@ -482,16 +468,11 @@ export default function ContactUs() {
                 </button>
               </div>
             ) : (
-              <form ref={form} onSubmit={handleSubmit}>
-                {/* =================================================
-                    HIDDEN TIME FIELD
-                ================================================= */}
-                <input type="hidden" name="time" value="" readOnly />
+              <form onSubmit={handleSubmit}>
 
-                {/* =================================================
-                    NAME + EMAIL
-                ================================================= */}
+                {/* NAME + EMAIL */}
                 <div className="grid gap-5 sm:grid-cols-2">
+
                   {/* NAME */}
                   <div>
                     <label
@@ -559,9 +540,7 @@ export default function ContactUs() {
                   </div>
                 </div>
 
-                {/* =================================================
-                    SUBJECT / TOPIC
-                ================================================= */}
+                {/* SUBJECT / TOPIC */}
                 <div className="mt-5">
                   <label
                     htmlFor="subject"
@@ -591,27 +570,37 @@ export default function ContactUs() {
                       Select a topic
                     </option>
 
-                    <option value="General question">General question</option>
+                    <option value="General question">
+                      General question
+                    </option>
 
                     <option value="Wallet / connection issue">
                       Wallet / connection issue
                     </option>
 
-                    <option value="Borrowing">Borrowing</option>
+                    <option value="Borrowing">
+                      Borrowing
+                    </option>
 
-                    <option value="Repayment">Repayment</option>
+                    <option value="Repayment">
+                      Repayment
+                    </option>
 
-                    <option value="Supported assets">Supported assets</option>
+                    <option value="Supported assets">
+                      Supported assets
+                    </option>
 
-                    <option value="Technical issue">Technical issue</option>
+                    <option value="Technical issue">
+                      Technical issue
+                    </option>
 
-                    <option value="Other">Other</option>
+                    <option value="Other">
+                      Other
+                    </option>
                   </select>
                 </div>
 
-                {/* =================================================
-                    MESSAGE
-                ================================================= */}
+                {/* MESSAGE */}
                 <div className="mt-5">
                   <label
                     htmlFor="message"
@@ -643,9 +632,7 @@ export default function ContactUs() {
                   />
                 </div>
 
-                {/* =================================================
-                    SUBMIT BUTTON
-                ================================================= */}
+                {/* SUBMIT BUTTON */}
                 <button
                   type="submit"
                   disabled={sending}
@@ -672,6 +659,7 @@ export default function ContactUs() {
                   ) : (
                     <>
                       Send Message
+
                       <FiSend
                         className="
                           transition-transform
@@ -685,8 +673,8 @@ export default function ContactUs() {
                 </button>
 
                 <p className="logo mt-4 text-center text-[10px] leading-5 text-white/25">
-                  We will only use your information to respond to your request.
-                  Never share your private keys or recovery phrase.
+                  We will only use your information to respond to your
+                  request. Never share your private keys or recovery phrase.
                 </p>
               </form>
             )}
@@ -715,8 +703,8 @@ export default function ContactUs() {
             </h3>
 
             <p className="logo mt-3 text-sm leading-6 text-white/40">
-              Explore MiniLend, connect your wallet, and discover a simpler way
-              to access liquidity.
+              Explore MiniLend, connect your wallet, and discover
+              a simpler way to access liquidity.
             </p>
 
             <a
@@ -735,6 +723,7 @@ export default function ContactUs() {
               "
             >
               Explore MiniLend
+
               <FiArrowRight
                 className="
                   transition-transform duration-300
@@ -748,3 +737,4 @@ export default function ContactUs() {
     </section>
   );
 }
+
