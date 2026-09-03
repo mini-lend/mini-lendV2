@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from "react";
+import GetStarted from "./Connect";
 import {
   FiArrowRight,
   FiArrowUpRight,
