@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAccount } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 import {
   FiArrowUpRight,
@@ -10,6 +12,7 @@ import {
 } from "react-icons/fi";
 
 export default function Navbar() {
+  const { address, isConnected } = useAccount();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -179,6 +182,24 @@ export default function Navbar() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  /*
+  ============================================================
+  REDIRECT WHEN CNNECTED
+  ============================================================
+  */
+  useEffect(() => {
+    if (location.pathname !== "/") return;
+
+    const timer = setTimeout(() => {
+      if (address && isConnected) {
+        navigate("/dashboard");
+        console.log(`Connected account: ${address}`);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [address, isConnected, location.pathname, navigate]);
 
   // ============================================================
   // NAVBAR
@@ -439,8 +460,18 @@ export default function Navbar() {
           {/* =================================================
               CONNECT WALLET
           ================================================== */}
-
-          <button
+          <ConnectButton
+            accountStatus={{
+              smallScreen: "avatar",
+              largeScreen: "full",
+            }}
+            showBalance={{
+              smallScreen: false,
+              largeScreen: true,
+            }}
+            label="Sign in"
+          />
+          {/* <button
             id="headerConnect"
             type="button"
             className="
@@ -469,7 +500,9 @@ export default function Navbar() {
               lg:text-sm
             "
           >
-            <span className="relative z-10">Connect Wallet</span>
+            <span className="relative z-10">
+              Connect Wallet
+            </span>
 
             <FiArrowUpRight
               className="
@@ -498,7 +531,7 @@ export default function Navbar() {
                 group-hover:translate-x-full
               "
             />
-          </button>
+          </button> */}
 
           {/* =================================================
               MOBILE MENU BUTTON
