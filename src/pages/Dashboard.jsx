@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
@@ -11,42 +10,49 @@ import LiquidityOpportunity from "../components/LiquidityOpportunity";
 import ActionButtons from "../components/ActionButtons";
 import Activity from "../components/Activity";
 import Footer from "../components/Footer";
-
+import DashboardSkeleton from "../components/DashboardSkeleton";
 
 export default function Dashboard() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    // Show skeleton first whenever Dashboard mounts/refreshed
+    const timer = setTimeout(() => {
+      setLoading(false);
+
+      // Start dashboard fade-in after skeleton disappears
+      requestAnimationFrame(() => {
+        setVisible(true);
+      });
+    }, 1200);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Show skeleton before dashboard
+  if (loading) {
+    return <DashboardSkeleton />;
+  }
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] text-white">
-
-      {/* =====================================================
-          SIDEBAR
-      ====================================================== */}
+    <div
+      className={`min-h-screen bg-[#0d0d0d] text-white transition-opacity duration-500 ease-out ${
+        visible ? "opacity-100" : "opacity-0"
+      }`}
+    >
       <Sidebar
         mobileOpen={mobileOpen}
         setMobileOpen={setMobileOpen}
       />
 
-      {/* =====================================================
-          MAIN
-      ====================================================== */}
       <main className="min-h-screen lg:ml-64">
-
-        {/* ===================================================
-            HEADER
-        ==================================================== */}
         <DashboardHeader
           onMenuClick={() => setMobileOpen(true)}
         />
 
-        {/* ===================================================
-            CONTENT
-        ==================================================== */}
         <div className="p-5 sm:p-6 lg:p-8">
-
-          {/* =================================================
-              PAGE INTRO
-          ================================================== */}
           <section className="mb-8">
             <p className="text-xs font-medium uppercase tracking-wider text-[#6DD054] sm:text-sm">
               Overview
@@ -62,53 +68,31 @@ export default function Dashboard() {
             </p>
           </section>
 
-          {/* =================================================
-              POSITION OVERVIEW
-          ================================================== */}
           <section className="mb-6">
             <PositionOverview />
           </section>
 
-          {/* =================================================
-              FINANCIAL CARDS
-          ================================================== */}
           <section className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
             <CollateralCard />
             <DebtCard />
             <HealthCard />
           </section>
 
-          {/* =================================================
-              LIQUIDITY OPPORTUNITY
-          ================================================== */}
           <section className="mb-6">
             <LiquidityOpportunity />
           </section>
 
-          {/* =================================================
-              QUICK ACTIONS
-          ================================================== */}
           <section className="mb-6">
             <ActionButtons />
           </section>
 
-          {/* =================================================
-              ACTIVITY
-          ================================================== */}
           <section className="mb-6">
             <Activity />
           </section>
 
-          {/* =================================================
-              FOOTER
-          ================================================== */}
           <Footer />
-
         </div>
-
       </main>
-
     </div>
   );
 }
-
