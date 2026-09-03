@@ -1,4 +1,4 @@
-
+import { useEffect, useState } from "react";
 import {
   FiTrendingUp,
   FiDollarSign,
@@ -7,14 +7,41 @@ import {
   FiArrowLeft,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+
 import Footer from "../components/Footer";
+import MarketsSkeleton from "./MarketsSkeleton";
 
 export default function Markets() {
   const navigate = useNavigate();
 
-  return (
-    <div className="min-h-screen bg-[#0d0d0d] text-white flex flex-col">
+  const [loading, setLoading] = useState(true);
+  const [visible, setVisible] = useState(false);
 
+  // Show skeleton first whenever Markets page loads/refreshed
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+
+      // Start fade-in after skeleton disappears
+      requestAnimationFrame(() => {
+        setVisible(true);
+      });
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Show skeleton before actual Markets page
+  if (loading) {
+    return <MarketsSkeleton />;
+  }
+
+  return (
+    <div
+      className={`min-h-screen bg-[#0d0d0d] text-white flex flex-col transition-opacity duration-500 ease-out ${
+        visible ? "opacity-100" : "opacity-0"
+      }`}
+    >
       {/* =====================================================
           PAGE HEADER
       ====================================================== */}
@@ -23,6 +50,7 @@ export default function Markets() {
         <div className="px-5 py-6 sm:px-6 lg:px-8 lg:py-8">
 
           {/* BACK BUTTON */}
+
           <button
             type="button"
             onClick={() => navigate("/dashboard")}
@@ -50,22 +78,26 @@ export default function Markets() {
             <span>Back to Dashboard</span>
           </button>
 
+          {/* PAGE LABEL */}
+
           <p className="text-xs sm:text-sm text-[#6DD054] font-medium uppercase tracking-wider">
             Markets
           </p>
+
+          {/* PAGE TITLE */}
 
           <h1 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight">
             Lending Markets
           </h1>
 
+          {/* DESCRIPTION */}
+
           <p className="mt-2 text-sm text-white/40 max-w-xl">
             Explore available assets, supply liquidity and borrow
             against your collateral.
           </p>
-
         </div>
       </div>
-
 
       {/* =====================================================
           CONTENT
@@ -102,7 +134,6 @@ export default function Markets() {
 
         </section>
 
-
         {/* =================================================
             MARKET LIST
         ================================================== */}
@@ -122,7 +153,6 @@ export default function Markets() {
                 Supply or borrow supported assets
               </p>
             </div>
-
 
             {/* SEARCH */}
 
@@ -165,7 +195,6 @@ export default function Markets() {
 
           </div>
 
-
           {/* =================================================
               MARKET CONTAINER
           ================================================== */}
@@ -204,7 +233,6 @@ export default function Markets() {
               <span>Liquidity</span>
               <span className="text-right">Actions</span>
             </div>
-
 
             {/* EMPTY STATE */}
 
@@ -245,17 +273,14 @@ export default function Markets() {
 
       </main>
 
-
       {/* =====================================================
           FOOTER
       ====================================================== */}
 
       <Footer />
-
     </div>
   );
 }
-
 
 /* =========================================================
    OVERVIEW CARD
@@ -277,11 +302,9 @@ function OverviewCard({
         p-5
       "
     >
-
       <div className="flex items-start justify-between">
 
         <div>
-
           <p className="text-xs text-white/35">
             {label}
           </p>
@@ -289,9 +312,7 @@ function OverviewCard({
           <p className="mt-2 text-2xl font-bold tracking-tight">
             {value}
           </p>
-
         </div>
-
 
         {/* ICON */}
 
@@ -314,7 +335,6 @@ function OverviewCard({
 
       </div>
 
-
       {/* DESCRIPTION */}
 
       <p className="mt-4 text-xs text-white/25">
@@ -324,4 +344,3 @@ function OverviewCard({
     </div>
   );
 }
-

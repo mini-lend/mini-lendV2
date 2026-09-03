@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
+import DashboardSkeleton from "../components/DashboardSkeleton";
+
 import {
   FiArrowUpRight,
   FiMenu,
@@ -13,9 +15,11 @@ import {
 
 export default function Navbar() {
   const { address, isConnected } = useAccount();
+
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const [dashboardLoading, setDashboardLoading] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -111,7 +115,9 @@ export default function Navbar() {
       const navbarOffset = 110;
 
       const position =
-        section.getBoundingClientRect().top + window.scrollY - navbarOffset;
+        section.getBoundingClientRect().top +
+        window.scrollY -
+        navbarOffset;
 
       window.scrollTo({
         top: position,
@@ -153,11 +159,17 @@ export default function Navbar() {
     const navbarOffset = 110;
 
     const position =
-      section.getBoundingClientRect().top + window.scrollY - navbarOffset;
+      section.getBoundingClientRect().top +
+      window.scrollY -
+      navbarOffset;
 
     setActiveSection(id);
 
-    window.history.replaceState(null, "", id === "home" ? "/" : `/#${id}`);
+    window.history.replaceState(
+      null,
+      "",
+      id === "home" ? "/" : `/#${id}`
+    );
 
     window.scrollTo({
       top: position,
@@ -183,23 +195,40 @@ export default function Navbar() {
     };
   }, []);
 
-  /*
-  ============================================================
-  REDIRECT WHEN CNNECTED
-  ============================================================
-  */
+  // ============================================================
+  // REDIRECT WHEN WALLET CONNECTS
+  // ============================================================
+
   useEffect(() => {
+    // Only trigger this behavior from the landing page.
     if (location.pathname !== "/") return;
 
+    // Do nothing until wallet is actually connected.
+    if (!address || !isConnected) return;
+
+    // Show dashboard skeleton immediately.
+    setDashboardLoading(true);
+
+    // Keep skeleton visible briefly so the transition
+    // feels intentional instead of flashing.
     const timer = setTimeout(() => {
-      if (address && isConnected) {
-        navigate("/dashboard");
-        console.log(`Connected account: ${address}`);
-      }
-    }, 1000);
+      navigate("/dashboard", {
+        replace: true,
+      });
+
+      console.log(`Connected account: ${address}`);
+    }, 1200);
 
     return () => clearTimeout(timer);
   }, [address, isConnected, location.pathname, navigate]);
+
+  // ============================================================
+  // DASHBOARD LOADING SKELETON
+  // ============================================================
+
+  if (dashboardLoading) {
+    return <DashboardSkeleton />;
+  }
 
   // ============================================================
   // NAVBAR
@@ -211,28 +240,28 @@ export default function Navbar() {
         fixed
         top-4
         left-1/2
-        -translate-x-1/2
         z-50
         w-[calc(100%-2rem)]
-        sm:w-[calc(100%-3rem)]
-        lg:w-[calc(100%-5rem)]
-        max-w-7xl
+        -translate-x-1/2
         rounded-2xl
         border
         transition-all
         duration-300
+        sm:w-[calc(100%-3rem)]
+        lg:w-[calc(100%-5rem)]
+        max-w-7xl
 
         ${
           scrolled
             ? `
-              bg-[#0c0c0c]/95
               border-white/[0.10]
-              backdrop-blur-2xl
+              bg-[#0c0c0c]/95
               shadow-[0_18px_50px_rgba(0,0,0,0.45)]
+              backdrop-blur-2xl
             `
             : `
-              bg-[#101010]/90
               border-white/[0.08]
+              bg-[#101010]/90
               backdrop-blur-xl
             `
         }
@@ -274,8 +303,8 @@ export default function Navbar() {
                 w-8
                 rounded-full
                 bg-white/15
-                blur-md
                 opacity-70
+                blur-md
                 transition-transform
                 duration-500
                 group-hover:translate-x-2
@@ -415,7 +444,9 @@ export default function Navbar() {
                 group-hover:text-[#6DD054]
               "
             />
+
             White Paper
+
             <FiArrowUpRight
               className="
                 text-white/20
@@ -460,6 +491,7 @@ export default function Navbar() {
           {/* =================================================
               CONNECT WALLET
           ================================================== */}
+
           <ConnectButton
             accountStatus={{
               smallScreen: "avatar",
@@ -471,67 +503,6 @@ export default function Navbar() {
             }}
             label="Sign in"
           />
-          {/* <button
-            id="headerConnect"
-            type="button"
-            className="
-              group
-              relative
-              hidden
-              h-10
-              items-center
-              justify-center
-              gap-1.5
-              overflow-hidden
-              rounded-xl
-              bg-[#6DD054]
-              px-4
-              text-xs
-              font-semibold
-              text-[#0b1609]
-              transition-all
-              duration-300
-              hover:-translate-y-0.5
-              hover:bg-[#cae8d3]
-              active:translate-y-0
-              active:scale-[0.98]
-              sm:flex
-              lg:px-5
-              lg:text-sm
-            "
-          >
-            <span className="relative z-10">
-              Connect Wallet
-            </span>
-
-            <FiArrowUpRight
-              className="
-                relative
-                z-10
-                text-base
-                transition-transform
-                duration-300
-                group-hover:-translate-y-0.5
-                group-hover:translate-x-0.5
-              "
-            />
-
-            <span
-              className="
-                absolute
-                inset-0
-                -translate-x-full
-                skew-x-12
-                bg-gradient-to-r
-                from-transparent
-                via-white/30
-                to-transparent
-                transition-transform
-                duration-700
-                group-hover:translate-x-full
-              "
-            />
-          </button> */}
 
           {/* =================================================
               MOBILE MENU BUTTON
@@ -540,7 +511,11 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setMobileOpen((prev) => !prev)}
-            aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
+            aria-label={
+              mobileOpen
+                ? "Close navigation"
+                : "Open navigation"
+            }
             aria-expanded={mobileOpen}
             className="
               flex
@@ -681,11 +656,7 @@ export default function Navbar() {
                   "
                 >
                   <span className="flex items-center gap-3">
-                    <FiFileText
-                      className="
-                        text-[#6DD054]
-                      "
-                    />
+                    <FiFileText className="text-[#6DD054]" />
                     White Paper
                   </span>
 
@@ -713,7 +684,9 @@ export default function Navbar() {
                   py-3
                 "
               >
-                <span className="text-xs text-white/35">Network</span>
+                <span className="text-xs text-white/35">
+                  Network
+                </span>
 
                 <span className="flex items-center gap-2 text-xs text-[#6DD054]">
                   <FiCircle
@@ -724,46 +697,10 @@ export default function Navbar() {
                     "
                     fill="#6DD054"
                   />
+
                   Anvil
                 </span>
               </div>
-
-              {/* MOBILE CONNECT WALLET */}
-
-              <button
-                id="mobileConnect"
-                type="button"
-                onClick={closeMobileMenu}
-                className="
-                  group
-                  mt-3
-                  flex
-                  h-12
-                  w-full
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-xl
-                  bg-[#6DD054]
-                  text-sm
-                  font-semibold
-                  text-[#0b1609]
-                  transition-all
-                  duration-200
-                  hover:bg-[#cae8d0]
-                  active:scale-[0.98]
-                "
-              >
-                Connect Wallet
-                <FiArrowUpRight
-                  className="
-                    transition-transform
-                    duration-200
-                    group-hover:-translate-y-0.5
-                    group-hover:translate-x-0.5
-                  "
-                />
-              </button>
             </div>
           </div>
         </div>
