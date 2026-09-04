@@ -1,4 +1,4 @@
-import { parseEther, formatEther } from "viem";
+import { parseEther, formatEther, formatUnits } from "viem";
 import { LENDING_ABI } from "../utils/contractAbi";
 import { CONTRACT_ADDRESSES } from "../utils/chains.address";
 
@@ -6,7 +6,7 @@ import { CONTRACT_ADDRESSES } from "../utils/chains.address";
  * Get contract address dynamically
  */
 export const getLendingContract = (chainId) => {
-  return CONTRACT_ADDRESSES[chainId]?.lending;
+  return CONTRACT_ADDRESSES[chainId]?.mLend;
 };
 
 /**
@@ -77,7 +77,12 @@ export const prepareWithdrawCollateralTx = ({ amount, account, chainId }) => {
 /**
  * Liquidate a position
  */
-export const prepareLiquidationTx = ({ borrower, repayAmount, account, chainId }) => {
+export const prepareLiquidationTx = ({
+  borrower,
+  repayAmount,
+  account,
+  chainId,
+}) => {
   const address = getLendingContract(chainId);
   const repayWei = parseEther(repayAmount.toString());
 
@@ -123,7 +128,12 @@ export const prepareRevokeTokenTx = ({ tokenAddress, account, chainId }) => {
 /**
  * Set price feed for a token (owner only)
  */
-export const prepareSetFeedTx = ({ tokenAddress, feedAddress, account, chainId }) => {
+export const prepareSetFeedTx = ({
+  tokenAddress,
+  feedAddress,
+  account,
+  chainId,
+}) => {
   const address = getLendingContract(chainId);
 
   return {
@@ -174,8 +184,22 @@ export const prepareSetLiquidationBonusTx = ({ bonus, account, chainId }) => {
 /**
  * Get user position
  */
-export const getUserPosition = async ({ userAddress, chainId, publicClient }) => {
+export const getUserPosition = async ({
+  userAddress,
+  chainId,
+  publicClient,
+}) => {
   const address = getLendingContract(chainId);
+  // console.log(
+  //   "From lendingService.js, getUserPosition, userAddress and contract address:",
+  //   userAddress,
+  //   "contract address:",
+  //   address,
+  //   "on chain:",
+  //   chainId,
+  //   "with public client:",
+  //   publicClient,
+  // );
 
   const result = await publicClient.readContract({
     address,
@@ -212,7 +236,11 @@ export const getUserHealth = async ({ userAddress, chainId, publicClient }) => {
 /**
  * Get token price
  */
-export const getTokenPrice = async ({ tokenAddress, chainId, publicClient }) => {
+export const getTokenPrice = async ({
+  tokenAddress,
+  chainId,
+  publicClient,
+}) => {
   const address = getLendingContract(chainId);
 
   const price = await publicClient.readContract({
@@ -228,7 +256,12 @@ export const getTokenPrice = async ({ tokenAddress, chainId, publicClient }) => 
 /**
  * Get USD value of token amount
  */
-export const getUsdValue = async ({ tokenAddress, amount, chainId, publicClient }) => {
+export const getUsdValue = async ({
+  tokenAddress,
+  amount,
+  chainId,
+  publicClient,
+}) => {
   const address = getLendingContract(chainId);
   const amountWei = parseEther(amount.toString()); // use parseUnits(amount.toString(), tokenDecimals)
 
@@ -239,13 +272,18 @@ export const getUsdValue = async ({ tokenAddress, amount, chainId, publicClient 
     args: [tokenAddress, amountWei],
   });
 
-  return formatEther(usdValue);
+  return formatUnits(usdValue, 18);
 };
 
 /**
  * Get borrowable amount for user
  */
-export const getBorrowableAmount = async ({ userAddress, tokenAddress, chainId, publicClient }) => {
+export const getBorrowableAmount = async ({
+  userAddress,
+  tokenAddress,
+  chainId,
+  publicClient,
+}) => {
   const address = getLendingContract(chainId);
 
   const amount = await publicClient.readContract({
@@ -261,7 +299,11 @@ export const getBorrowableAmount = async ({ userAddress, tokenAddress, chainId, 
 /**
  * Check if token is approved
  */
-export const isTokenApproved = async ({ tokenAddress, chainId, publicClient }) => {
+export const isTokenApproved = async ({
+  tokenAddress,
+  chainId,
+  publicClient,
+}) => {
   const address = getLendingContract(chainId);
 
   return await publicClient.readContract({
@@ -276,7 +318,11 @@ export const isTokenApproved = async ({ tokenAddress, chainId, publicClient }) =
  * Get contract token balance
  */
 // check function name against the contract abi(getContractsTokenBalance or getContractBalance)
-export const getContractsTokenBalance = async ({ tokenAddress, chainId, publicClient }) => {
+export const getContractsTokenBalance = async ({
+  tokenAddress,
+  chainId,
+  publicClient,
+}) => {
   const address = getLendingContract(chainId);
 
   const balance = await publicClient.readContract({
@@ -306,7 +352,11 @@ export const getApprovedTokensCount = async ({ chainId, publicClient }) => {
 /**
  * Get approved token list
  */
-export const getApprovedTokenList = async ({ index, chainId, publicClient }) => {
+export const getApprovedTokenList = async ({
+  index,
+  chainId,
+  publicClient,
+}) => {
   const address = getLendingContract(chainId);
 
   return await publicClient.readContract({
@@ -324,7 +374,11 @@ export const getApprovedTokenList = async ({ index, chainId, publicClient }) => 
 /**
  * Check if a position is liquidatable
  */
-export const isPositionLiquidatable = async ({ userAddress, chainId, publicClient }) => {
+export const isPositionLiquidatable = async ({
+  userAddress,
+  chainId,
+  publicClient,
+}) => {
   const health = await getUserHealth({ userAddress, chainId, publicClient });
   // Position is liquidatable if health < 1e18 (100%)
   return health < BigInt(1e18);
@@ -333,8 +387,17 @@ export const isPositionLiquidatable = async ({ userAddress, chainId, publicClien
 /**
  * Calculate liquidation details
  */
-export const calculateLiquidation = async ({ userAddress, tokenAddress, chainId, publicClient }) => {
-  const position = await getUserPosition({ userAddress, chainId, publicClient });
+export const calculateLiquidation = async ({
+  userAddress,
+  tokenAddress,
+  chainId,
+  publicClient,
+}) => {
+  const position = await getUserPosition({
+    userAddress,
+    chainId,
+    publicClient,
+  });
   const price = await getTokenPrice({ tokenAddress, chainId, publicClient });
   const health = await getUserHealth({ userAddress, chainId, publicClient });
 

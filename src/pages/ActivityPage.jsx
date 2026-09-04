@@ -8,8 +8,8 @@ import {
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
-import ActivityFilters from "./ActivityFilters";
-import ActivityList from "./ActivityList";
+import ActivityFilters from "../activity/ActivityFilters";
+import ActivityList from "../activity/ActivityList";
 
 export default function ActivityPage() {
   const navigate = useNavigate();
