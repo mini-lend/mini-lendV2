@@ -7,9 +7,8 @@ import {
   FiArrowLeft,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-
-import Footer from "../components/Footer";
 import MarketsSkeleton from "./MarketsSkeleton";
+import DashboardFooter from "../components/DashboardFooter";
 
 export default function Markets() {
   const navigate = useNavigate();
@@ -277,7 +276,7 @@ export default function Markets() {
           FOOTER
       ====================================================== */}
 
-      <Footer />
+     <DashboardFooter />
     </div>
   );
 }

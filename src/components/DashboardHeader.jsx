@@ -95,33 +95,6 @@ export default function DashboardHeader({ onMenuClick }) {
 
           {/* RIGHT SIDE */}
           <div className="flex items-center gap-3">
-            {/* NETWORK */}
-            <div
-              className="
-                hidden
-                sm:flex
-                items-center
-                gap-2
-                h-10
-                px-3
-                rounded-xl
-                border
-                border-[#6DD054]/15
-                bg-[#6DD054]/[0.05]
-              "
-            >
-              <FiCircle
-                className="
-                  text-[8px]
-                  fill-[#6DD054]
-                  text-[#6DD054]
-                  animate-pulse
-                "
-              />
-
-              <span className="text-xs font-medium text-white/55">Anvil</span>
-            </div>
-
             {/* NOTIFICATION */}
             <button
               type="button"
