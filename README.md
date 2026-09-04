@@ -8,12 +8,11 @@ The project was built as a hands-on Web3 learning project using:
 
 * **Solidity** — Smart contracts
 * **Foundry** — Development, testing, and deployment
-* **Anvil** — Local Ethereum blockchain
 * **Viem** — Blockchain interaction
 * **MetaMask** — Wallet connection
 * **MockUSDT** — ERC-20 token used for lending experiments
 
-> **Note:** MiniLend is an educational/demo project designed for learning and experimentation. It is not intended for production use or real funds.
+> **Note:** MiniLend is an educational/demo project designed for learning and experimentation. It has not been audited and should not be used with real funds.
 
 ---
 
@@ -27,11 +26,12 @@ The project was built as a hands-on Web3 learning project using:
 | ✅ Approve            | Approve MiniLend to spend MockUSDT           |
 | 💸 Repay             | Repay your outstanding loan                  |
 | 📤 Withdraw          | Withdraw collateral after repaying your loan |
-| 📊 Local Testing     | Test everything on an Anvil blockchain       |
+| 📊 Position Tracking | Monitor collateral, debt, and lending health |
+| 📈 Activity          | View lending activity and transactions       |
 
 ---
 
-## 🏗️ How MiniLend Works
+# 🏗️ How MiniLend Works
 
 The basic lending flow is:
 
@@ -49,19 +49,19 @@ The basic lending flow is:
              ┌─────────────┴─────────────┐
              ▼                           ▼
       ┌─────────────┐             ┌─────────────┐
-      │    ETH      │             │  MockUSDT   │
-      │ Collateral  │             │    Token    │
+      │     ETH     │             │  MockUSDT   │
+      │  Collateral │             │    Token    │
       └─────────────┘             └─────────────┘
              │                           │
              └─────────────┬─────────────┘
                            ▼
                     ┌──────────────┐
-                    │  Local Chain │
-                    │    Anvil     │
+                    │ Blockchain   │
+                    │   Network    │
                     └──────────────┘
 ```
 
-### Typical user flow
+### Typical User Flow
 
 ```text
 Connect Wallet
@@ -83,7 +83,7 @@ Withdraw ETH
 
 # 📋 Prerequisites
 
-Before running MiniLend, install the following:
+Before running MiniLend, make sure you have:
 
 * [Foundry](https://book.getfoundry.sh/)
 * MetaMask
@@ -97,7 +97,8 @@ You should also have a basic understanding of:
 * ERC-20 tokens
 * Solidity
 * JavaScript
-* Local blockchain development
+* Blockchain transactions
+* Web3 development
 
 ---
 
@@ -127,75 +128,46 @@ Verify the installation:
 
 ```bash
 forge --version
-anvil --version
 ```
 
-### ⚠️ Windows Users
+### Windows Users
 
-If `forge` is pointing to the wrong installation, check which version is being used:
+If `forge` is pointing to the wrong installation, check which version is being used.
 
-```bash
-which forge
-```
-
-or on Windows:
+On Windows:
 
 ```powershell
 where.exe forge
+```
+
+On Linux/macOS:
+
+```bash
+which forge
 ```
 
 Make sure the Foundry installation you expect is being used.
 
 ---
 
-# ⛓️ 2. Start Anvil
+# 🔑 2. Configure Your Environment
 
-Anvil provides a local Ethereum blockchain for development and testing.
+Create a `.env` file in the project root.
 
-Run:
-
-```bash
-anvil
-```
-
-You should see something similar to:
-
-```text
-Listening on 127.0.0.1:8545
-```
-
-Anvil will also provide several funded accounts.
-
-Keep this terminal running.
-
-> ⚠️ Do not close the Anvil terminal while testing MiniLend.
-
----
-
-# 🔑 3. Configure Your Private Key
-
-Anvil provides test private keys.
-
-Copy one of the private keys shown in the Anvil terminal.
-
-Create a `.env` file in the project root:
-
-```env
-PRIVATE_KEY=your_anvil_private_key
-```
+Depending on your deployment configuration, your environment variables may include your deployment private key and other required settings.
 
 Example:
 
 ```env
-PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+PRIVATE_KEY=your_deployment_private_key
 ```
 
-### Important
+### ⚠️ Important
 
-* Do not add quotes.
-* Do not add spaces around `=`.
-* Never use a real wallet private key.
+* Never use a private key containing real funds for development.
 * Never commit `.env` to GitHub.
+* Never share your private key.
+* Use environment variables for sensitive configuration.
 
 Your `.gitignore` should contain:
 
@@ -205,9 +177,9 @@ Your `.gitignore` should contain:
 
 ---
 
-# 📦 4. Install Project Dependencies
+# 📦 3. Clone the Project
 
-Clone the project:
+Clone the repository:
 
 ```bash
 git clone https://github.com/Osfoce/Mini-Lend_-Defi-project-.git
@@ -219,17 +191,17 @@ Enter the project:
 cd Mini-Lend_-Defi-project-
 ```
 
-Install the required dependencies according to the project's package configuration.
-
-If using Foundry dependencies:
+Install the Foundry dependencies:
 
 ```bash
 forge install
 ```
 
+If the project contains frontend dependencies, install them according to the frontend package configuration.
+
 ---
 
-# 🔨 5. Build the Smart Contracts
+# 🔨 4. Build the Smart Contracts
 
 Compile the contracts:
 
@@ -239,13 +211,13 @@ forge build
 
 If compilation succeeds, you should see a successful build.
 
-You can also run the test suite:
+Run the test suite:
 
 ```bash
 forge test
 ```
 
-For more detailed output:
+For more detailed test output:
 
 ```bash
 forge test -vv
@@ -253,13 +225,13 @@ forge test -vv
 
 ---
 
-# 🚀 6. Deploy the Contracts
+# 🚀 5. Deploy the Contracts
 
-MiniLend uses two main contracts:
+MiniLend uses two primary contracts:
 
 ### `MockUSDT.sol`
 
-A mock ERC-20 token used for testing the lending system.
+A mock ERC-20 token used for testing and demonstrating the lending system.
 
 ### `MiniLend.sol`
 
@@ -271,23 +243,32 @@ The main lending contract responsible for:
 * Withdrawals
 * Loan-related logic
 
-Deploy using the Foundry deployment script:
+Deploy using the project's Foundry deployment script.
+
+Example:
 
 ```bash
 source .env
 
 forge script script/Deploy.s.sol \
-  --rpc-url http://127.0.0.1:8545 \
+  --rpc-url YOUR_RPC_URL \
   --broadcast \
   --private-key $PRIVATE_KEY
 ```
 
-On Windows PowerShell, you may need to set the private key differently depending on your shell.
+Replace:
 
-After deployment, save the addresses displayed by the script:
+```text
+YOUR_RPC_URL
+```
+
+with the RPC endpoint for the network you are deploying to.
+
+After deployment, save the contract addresses displayed by the deployment script:
 
 ```text
 Deployed MockUSDT at: 0x...
+
 Deployed MiniLend at: 0x...
 ```
 
@@ -295,79 +276,57 @@ You will need these addresses in the frontend.
 
 ---
 
-# 🦊 7. Connect Anvil to MetaMask
+# 🦊 6. Connect MetaMask
 
-Open MetaMask and add a custom network.
+Open MetaMask and make sure it is connected to the **same blockchain network where the MiniLend contracts are deployed**.
 
-Use:
+Before using the application, verify:
 
-| Setting         | Value                   |
-| --------------- | ----------------------- |
-| Network Name    | Anvil                   |
-| RPC URL         | `http://127.0.0.1:8545` |
-| Chain ID        | `31337`                 |
-| Currency Symbol | ETH                     |
+* MetaMask is installed.
+* Your wallet is connected.
+* The correct network is selected.
+* You are using the correct wallet account.
+* The network supports the deployed MiniLend contracts.
 
-Save the network.
+> **Important:** Do not use a random network. The frontend and deployed contracts must use the same network.
 
 ---
 
-# 🔐 8. Import an Anvil Account
+# 🌐 7. Run the Frontend
 
-In MetaMask:
+If you are running the frontend locally, install the required dependencies first.
+
+For a Node/Vite-based frontend:
+
+```bash
+npm install
+```
+
+Then start the development server:
+
+```bash
+npm run dev
+```
+
+The terminal will provide a local URL, usually similar to:
 
 ```text
-MetaMask
-   ↓
-Account menu
-   ↓
-Add / Import Account
-   ↓
-Import private key
+http://localhost:5173
 ```
 
-Paste the private key from your Anvil terminal.
-
-You should now have an account funded with test ETH.
-
-> ⚠️ Anvil accounts are for local development only. Never import a real wallet private key into a development environment.
+Open that address in your browser.
 
 ---
 
-# 🌐 9. Run the Frontend
+# 🔌 8. Connect Your Wallet
 
-MiniLend's original frontend is a static web application.
+When the MiniLend dApp loads:
 
-Do not open `index.html` directly if the application relies on JavaScript modules.
-
-Instead, run a local server.
-
-For example:
-
-```bash
-npx serve .
-```
-
-Or:
-
-```bash
-python3 -m http.server
-```
-
-Then open the local address provided by the server.
-
----
-
-# 🔌 10. Connect Your Wallet
-
-When the dApp loads:
-
-1. Make sure Anvil is running.
-2. Make sure MetaMask is connected to Anvil.
+1. Make sure MetaMask is installed.
+2. Select the correct blockchain network.
 3. Click **Connect Wallet**.
-4. Approve the MetaMask request.
-
-You should see your connected wallet address.
+4. Approve the MetaMask connection request.
+5. Confirm that your wallet address appears in the application.
 
 Example:
 
@@ -377,37 +336,50 @@ Connected: 0x643...345
 
 ### Important
 
-The wallet should be connected **before initializing wallet-dependent contract clients**.
+The wallet should be connected before performing wallet-dependent transactions.
 
-The application needs access to the connected account before performing wallet transactions.
+The application needs access to the connected account before it can:
+
+* Sign transactions
+* Stake ETH
+* Borrow MockUSDT
+* Approve tokens
+* Repay loans
+* Withdraw collateral
 
 ---
 
-# 📍 11. Load Contract Addresses
+# 📍 9. Load Contract Addresses
 
-Enter the addresses generated during deployment:
+The frontend needs the addresses of the deployed contracts.
+
+You should configure:
 
 ```text
 MiniLend Contract:
+
 0x...
 
 MockUSDT Contract:
+
 0x...
 ```
 
-Then select:
+Make sure these addresses correspond to the network currently selected in MetaMask.
 
-**Load Contracts**
-
-If successful, the application should confirm that the contracts have been loaded.
+If the wrong addresses are used, the application may fail to read balances or execute transactions.
 
 ---
 
-# 🧪 12. Test MiniLend
+# 🧪 10. Test MiniLend
+
+Once your wallet is connected and the contracts are configured, you can test the lending workflow.
+
+---
 
 ## 🏦 Stake ETH
 
-Enter an amount of ETH.
+Enter the amount of ETH you want to use as collateral.
 
 Example:
 
@@ -419,11 +391,13 @@ Select:
 
 **Stake**
 
+Confirm the transaction in MetaMask.
+
 Expected result:
 
 * Your collateral balance increases.
 * The MiniLend contract receives the ETH.
-* Your wallet balance decreases by the staked amount plus gas.
+* Your wallet balance decreases by the staked amount plus network fees.
 
 ---
 
@@ -435,23 +409,27 @@ Select:
 
 **Borrow**
 
+Confirm the transaction.
+
 Expected result:
 
 * Your MockUSDT balance increases.
 * Your borrowing position is updated.
-* The transaction is recorded on the local blockchain.
+* Your debt is reflected in the dashboard.
 
 ---
 
 ## ✅ Approve MockUSDT
 
-Before repaying, MiniLend needs permission to spend your MockUSDT.
+Before repaying your loan, MiniLend needs permission to spend your MockUSDT.
 
 Select:
 
 **Approve**
 
 Confirm the transaction in MetaMask.
+
+The approval allows the MiniLend contract to transfer the approved amount of MockUSDT when you repay.
 
 ---
 
@@ -465,7 +443,11 @@ Select:
 
 Confirm the transaction.
 
-Your outstanding debt should decrease accordingly.
+Expected result:
+
+* Your MockUSDT balance decreases.
+* Your outstanding debt decreases.
+* Your lending position is updated.
 
 ---
 
@@ -477,11 +459,13 @@ Select:
 
 **Withdraw**
 
+Confirm the transaction.
+
 Expected result:
 
-* Your staked ETH is returned.
-* Your collateral balance decreases.
-* The transaction is confirmed on Anvil.
+* Your collateral is returned.
+* Your staked ETH balance decreases.
+* Your wallet receives the withdrawn ETH.
 
 ---
 
@@ -491,6 +475,7 @@ MiniLend currently uses two primary contracts:
 
 ```text
 contracts/
+
 ├── MiniLend.sol
 └── MockUSDT.sol
 ```
@@ -499,6 +484,7 @@ Deployment:
 
 ```text
 script/
+
 └── Deploy.s.sol
 ```
 
@@ -506,12 +492,14 @@ Frontend:
 
 ```text
 frontend/
-├── index.html
-├── script.js
-└── abi/
+
+├── ...
+├── components/
+├── pages/
+└── ...
 ```
 
-Your exact frontend structure may change as the project evolves.
+> The frontend structure may change as the project continues to evolve.
 
 ---
 
@@ -527,17 +515,17 @@ https://github.com/Osfoce/Mini-Lend_-Defi-project-/tree/main/src/contracts
 
 # 🐛 Common Problems
 
-| Problem                  | Possible Cause                      | Solution                            |
-| ------------------------ | ----------------------------------- | ----------------------------------- |
-| MetaMask doesn't open    | Frontend isn't running through HTTP | Use a local development server      |
-| Contract won't load      | Wallet isn't connected              | Connect MetaMask first              |
-| Balance shows `0`        | Wrong account or network            | Check MetaMask and Anvil            |
-| Transaction fails        | Incorrect contract address          | Verify deployment output            |
-| ABI error                | Incorrect ABI object                | Verify the ABI being passed to Viem |
-| Insufficient funds       | Wrong Anvil account                 | Import a funded Anvil account       |
-| Wrong chain              | MetaMask is on another network      | Switch to Anvil                     |
-| Contract doesn't respond | Anvil isn't running                 | Start `anvil`                       |
-| Deployment fails         | Private key/RPC configuration       | Check `.env` and RPC URL            |
+| Problem                  | Possible Cause                           | Solution                                               |
+| ------------------------ | ---------------------------------------- | ------------------------------------------------------ |
+| MetaMask doesn't open    | Wallet connection issue                  | Check MetaMask installation and browser permissions    |
+| Contract won't load      | Wallet or network is incorrect           | Connect wallet and select the correct network          |
+| Balance shows `0`        | Wrong account or contract address        | Verify wallet and deployment addresses                 |
+| Transaction fails        | Incorrect contract/network configuration | Check the contract address and selected network        |
+| ABI error                | Incorrect ABI object                     | Verify the ABI being passed to Viem                    |
+| Insufficient funds       | Wallet does not have enough native token | Fund the wallet appropriately for the selected network |
+| Wrong chain              | MetaMask is connected to another network | Switch to the network where MiniLend is deployed       |
+| Contract doesn't respond | RPC or contract configuration problem    | Check the RPC endpoint and contract address            |
+| Deployment fails         | Private key/RPC configuration            | Check `.env`, RPC URL, and deployment settings         |
 
 ---
 
@@ -545,18 +533,18 @@ https://github.com/Osfoce/Mini-Lend_-Defi-project-/tree/main/src/contracts
 
 Use this checklist when testing a fresh deployment:
 
-* [ ] Start Anvil
-* [ ] Create/configure `.env`
+* [ ] Install Foundry
+* [ ] Configure `.env`
 * [ ] Build contracts
 * [ ] Run contract tests
 * [ ] Deploy contracts
-* [ ] Save MiniLend address
-* [ ] Save MockUSDT address
-* [ ] Add Anvil to MetaMask
-* [ ] Import Anvil account
-* [ ] Start frontend
-* [ ] Connect wallet
-* [ ] Load contracts
+* [ ] Save MiniLend contract address
+* [ ] Save MockUSDT contract address
+* [ ] Configure the frontend
+* [ ] Start the frontend
+* [ ] Connect MetaMask
+* [ ] Select the correct network
+* [ ] Load/configure contracts
 * [ ] Stake ETH
 * [ ] Borrow MockUSDT
 * [ ] Approve MockUSDT
@@ -586,9 +574,9 @@ You learn how to:
 
 * Compile contracts
 * Run tests
-* Start Anvil
 * Deploy contracts
 * Debug smart contracts
+* Work with deployment scripts
 
 ### Wallet Integration
 
@@ -597,12 +585,12 @@ You learn how to:
 * Connect MetaMask
 * Work with wallet accounts
 * Sign transactions
-* Switch networks
+* Handle network selection
 * Handle transaction states
 
 ### Viem
 
-You learn how a frontend can communicate with Ethereum-compatible networks.
+You learn how a frontend can communicate with Ethereum-compatible blockchain networks.
 
 ---
 
@@ -617,9 +605,9 @@ Solidity
    ↓
 Foundry
    ↓
-Anvil
+Smart Contract
    ↓
-Deployed Contract
+Blockchain Network
    ↓
 Viem
    ↓
@@ -638,7 +626,6 @@ Instead of learning each technology separately, MiniLend connects them into one 
 
 Possible improvements include:
 
-* [ ] React frontend migration
 * [ ] Improved UX/UI
 * [ ] Better transaction feedback
 * [ ] Loan health indicators
@@ -646,12 +633,14 @@ Possible improvements include:
 * [ ] Transaction history
 * [ ] Better error messages
 * [ ] Responsive mobile interface
-* [ ] Testnet deployment
 * [ ] More comprehensive automated tests
 * [ ] Improved contract security
 * [ ] Production-grade oracle integration
+* [ ] Multi-asset collateral
+* [ ] Real-time market data
+* [ ] Mainnet-ready architecture
 
-> These improvements are intentionally separate from the current educational implementation.
+> These improvements are separate from the current educational implementation.
 
 ---
 
@@ -661,14 +650,13 @@ MiniLend is an **educational project**.
 
 It uses:
 
-* A local Anvil blockchain
-* Test ETH
-* MockUSDT
+* Test/mock assets
 * Experimental lending logic
+* Smart contracts that have not been formally audited
 
-It has **not been audited** and should not be used with real funds.
+The contracts have **not been audited** and should not be used with real funds.
 
-Do not deploy or use the contracts with real assets without appropriate security review, testing, and auditing.
+Do not deploy or interact with the contracts using real assets without appropriate security review, testing, and auditing.
 
 ---
 
@@ -693,377 +681,32 @@ MiniLend was my way of bringing those concepts together into one practical proje
 
 > *I was once a newbie who couldn't do anything without detailed steps.*
 
-If this project helps another developer understand how a Web3 application works from **smart contract → blockchain → wallet → frontend**, then it has achieved its purpose.
+If this project helps another developer understand how a Web3 application works from:
 
-Keep building.
+```text
+Smart Contract
+      ↓
+Blockchain
+      ↓
+Wallet
+      ↓
+Frontend
+      ↓
+User Interaction
+```
+
+then it has achieved its purpose.
+
+**Keep building.
 Keep learning.
-Keep experimenting.
+Keep experimenting.**
 
 ---
 
-## ⭐ If You Find This Project Useful
+# ⭐ If You Find This Project Useful
 
 Give the repository a ⭐ and feel free to explore the code.
 
 Learning Web3 is a journey — build, break things, fix them, and keep going.
 
-**Happy building!**
-
-# MiniLend dApp 🏦
-
-A Simple Crypto-Backed Lending System (Built with Solidity, Foundry, Viem & Anvil)
-
-MiniLend is a decentralized lending application where users can:
-
-✅ Stake ETH as collateral
-✅ Borrow a mock USD token (MockUSDT) based on collateral value
-✅ Repay borrowed tokens
-✅ Withdraw their collateral
-
-This project is designed with **learning and experimentation in mind**, especially for beginners entering the Web3 space.
-
----
-
-## 🚀 Prerequisites
-
-Before you begin, make sure you have the following installed:
-
-### ✅ Foundry (Forge + Anvil)
-
-Foundry is used for:
-
-* Compiling smart contracts
-* Running the local blockchain (Anvil)
-* Deploying contracts using deployment scripts
-
-Install Foundry:
-
-```bash
-curl -L https://foundry.paradigm.xyz | bash
-```
-
-Reload your terminal:
-
-```bash
-source ~/.bashrc
-```
-
-Install components:
-
-```bash
-foundryup
-```
-
-Verify:
-
-```bash
-forge --version
-anvil --version
-```
-❗❗❗ If forge is showing error, it might be using zoe forge library and that is not what we want
-run 
-```bash
-export PATH="$HOME/.foundry/bin:$PATH"
-```
-to change the path and confirm the forge with 
-```bash
-which forge
-```
-it should show 
-```bash
-/.foundry/bin/forge
-```
-
----
-
-## 🧱 Step 1: Start Anvil (Local Blockchain)
-
-Anvil simulates a local Ethereum network with funded accounts.
-
-Run:
-
-```bash
-anvil
-```
-
-You should see something like:
-
-```
-Listening on 127.0.0.1:8545
-```
-
-and a list of 10 private keys + addresses funded with 10,000 ETH.
-
-✅ Keep this terminal running
-❗ Do NOT close it
-
----
-
-## 🔑 Step 2: Set Your Private Key
-
-From the Anvil output, copy the first private key:
-
-Example:
-
-```
-0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-```
-
-Create a `.env` file:
-
-```
-PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-```
-
-✅ No quotes
-✅ No spaces
-
----
-
-## 📦 Step 3: Deploy the Contracts
-
-This project contains two contracts:
-
-1. `MockUSDT.sol` – a mintable ERC20 token
-2. `MiniLend.sol` – the lending logic
-
-Deployment is done using a Foundry deploy script.
-
-Run:
-
-```bash
-source .env
-forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast --private-key $PRIVATE_KEY
-```
-
-If successful, the output will show something like:
-
-```
-Deployed MockUSDT at: 0x....
-Deployed MiniLend at: 0x....
-```
-
-✅ COPY both contract addresses
-You will need them in the DApp
-
----
-
-## 🦊 Step 4: Connect Anvil to MetaMask
-
-Open MetaMask → top network dropdown → Add Network
-
-Click:
-
-**Add network manually**
-
-Enter:
-
-```
-Network Name: Anvil
-RPC URL: http://127.0.0.1:8545
-Chain ID: 31337
-Currency Symbol: ETH
-```
-
-Save. (Chrome browser preferable)
-
----
-
-### ✅ Import a funded account
-
-Click:
-
-MetaMask → Account → Import Account
-
-Paste the same private key from `.env`
-
-Now MetaMask shows:
-
-✅ Local network
-✅ 10,000 ETH balance
-
----
-
-## 🌐 Step 5: Run the DApp Frontend
-
-If your frontend is static:
-
-Open `index.html` in a browser
-
-OR run a simple server:
-
-```bash
-npx serve .
-```
-
-or
-
-```bash
-python3 -m http.server
-```
-
----
-
-## 🪝 Step 6: Connect Wallet (IMPORTANT!)
-
-Your dApp **must connect to MetaMask BEFORE loading contracts**
-
-If you load contracts first:
-
-❌ publicClient will not attach properly
-❌ walletClient will have no account
-❌ calls will fail
-
-So:
-
-1. Open the DApp
-2. Click **Connect Wallet**
-3. MetaMask will pop up
-4. Accept connection
-
-You should now see something like:
-
-```
-Connected: 0x643...345
-```
-
----
-
-## 🧳 Step 7: Load Contract Addresses
-
-Paste:
-
-✅ MiniLend contract address
-✅ MockUSDT token address
-
-Then click:
-
-👉 Load Contracts
-
-If successful:
-
-```
-Contracts loaded
-```
-
----
-
-## 🧪 Step 8: Test the dApp Features
-
-Now you can interact:
-
-### ✅ Stake ETH
-
-Enter an amount (e.g. 1)
-
-Click:
-
-🟩 Stake
-
-Expected:
-
-* Your staked balance increases
-* Contract ETH balance increases
-
----
-
-### ✅ Borrow USD
-
-Enter amount within LTV limit
-
-Click:
-
-🟨 Borrow
-
-Expected:
-
-* Your mock USDT balance increases
-* Contract USDT decreases or mints
-
----
-
-### ✅ Approve Spending
-
-Before repaying, you must approve MiniLend to spend your USDT
-
-Click:
-
-🟦 Approve
-
----
-
-### ✅ Repay Loan
-
-Enter amount to repay
-
-Click:
-
-🟥 Repay
-
----
-
-### ✅ Withdraw ETH
-
-Only works when:
-
-✅ You have fully repaid
-✅ You have staked ETH
-
----
-
-## 🧠 Common Mistakes & Fixes
-
-| Problem              | Cause                                      | Fix                            |
-| -------------------- | ------------------------------------------ | ------------------------------ |
-| No MetaMask popup    | Not served with HTTP / module import error | Use local server               |
-| Cannot load contract | Wallet not connected first                 | Connect wallet before load     |
-| Balance shows 0      | Wrong address or wrong chain               | Check Anvil + MetaMask network |
-| ABI invalid          | Importing wrong field                      | Use `abi: MiniLendAbi.abi`     |
-
----
-
-## 📦 Project Structure
-
-```
-contracts/
-  MiniLend.sol
-  MockUSDT.sol
-
-script/
-  Deploy.s.sol
-
-frontend/
-  index.html
-  script.js
-  abi/
-```
-
----
-
-## ✅ What You Learned
-
-By following this guide, you learned:
-
-✅ How to run a local blockchain (Anvil)
-✅ How deployment scripts work in Foundry
-✅ How to connect MetaMask to a local chain
-✅ How to connect a DApp to MetaMask using Viem
-✅ How to interact with deployed contracts
-
-This is the **exact journey every Web3 developer goes through**, and now you have a full working workflow.
-
----
-
-## ❤️ Final Words
-
-This project exists because:
-
-> "I was once a newbie who couldn't do anything without detailed steps."
-
-If this README helps even one developer avoid frustration, then it has achieved its purpose.
-
-Keep building.
-Keep learning.
-Your progress is inspiring. 🚀🔥
-
----
+**Happy building! 🚀**

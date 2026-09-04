@@ -9,7 +9,7 @@ import HealthCard from "../components/HealthCard";
 import LiquidityOpportunity from "../components/LiquidityOpportunity";
 import ActionButtons from "../components/ActionButtons";
 import Activity from "../components/Activity";
-import Footer from "../components/Footer";
+import DashboardFooter from "../components/DashboardFooter"
 import DashboardSkeleton from "../components/DashboardSkeleton";
 
 export default function Dashboard() {
@@ -90,7 +90,7 @@ export default function Dashboard() {
             <Activity />
           </section>
 
-          <Footer />
+          <DashboardFooter />
         </div>
       </main>
     </div>

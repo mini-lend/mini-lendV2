@@ -459,35 +459,7 @@ export default function Navbar() {
             />
           </Link>
 
-          {/* =================================================
-              ANVIL
-          ================================================== */}
-
-          <div
-            className="
-              hidden
-              h-9
-              items-center
-              gap-1.5
-              rounded-xl
-              px-2.5
-              text-xs
-              text-white/45
-              sm:flex
-            "
-          >
-            <FiCircle
-              className="
-                animate-pulse
-                text-[7px]
-                text-[#6DD054]
-              "
-              fill="#6DD054"
-            />
-
-            <span>Anvil</span>
-          </div>
-
+          
           {/* =================================================
               CONNECT WALLET
           ================================================== */}
@@ -670,37 +642,6 @@ export default function Navbar() {
                 </Link>
               </div>
 
-              {/* MOBILE NETWORK */}
-
-              <div
-                className="
-                  mt-3
-                  flex
-                  items-center
-                  justify-between
-                  rounded-xl
-                  bg-white/[0.025]
-                  px-3
-                  py-3
-                "
-              >
-                <span className="text-xs text-white/35">
-                  Network
-                </span>
-
-                <span className="flex items-center gap-2 text-xs text-[#6DD054]">
-                  <FiCircle
-                    className="
-                      animate-pulse
-                      text-[7px]
-                      text-[#6DD054]
-                    "
-                    fill="#6DD054"
-                  />
-
-                  Anvil
-                </span>
-              </div>
             </div>
           </div>
         </div>
