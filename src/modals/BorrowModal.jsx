@@ -141,7 +141,7 @@ export default function BorrowModal({ isOpen, onClose }) {
                 className="w-full bg-transparent outline-none text-xl font-semibold placeholder:text-white/15 disabled:opacity-50"
               />
               <span className="px-3 py-2 rounded-lg bg-white/[0.05] text-xs">
-                USDC
+                Token
               </span>
             </div>
             <div className="px-4 pb-3 flex justify-end">
@@ -160,13 +160,13 @@ export default function BorrowModal({ isOpen, onClose }) {
             <div className="flex justify-between">
               <span className="text-xs text-white/35">Current debt</span>
               <span className="text-xs text-white/70">
-                {currentDebt.toFixed(2)} USDC
+                {formatEther(currentDebt)} Token
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-xs text-white/35">New debt</span>
               <span className="text-xs text-white">
-                {(currentDebt + (Number(amount) || 0)).toFixed(2)} USDC
+                {formatEther(currentDebt + (Number(amount) || 0))} Token
               </span>
             </div>
             <div className="h-px bg-white/[0.06]" />
