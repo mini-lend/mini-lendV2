@@ -39,8 +39,8 @@ export default function StakeModal({ isOpen, onClose }) {
       // Refresh data after successful transaction
       // await triggerRefresh();
       setAmount("");
-      // handleRefresh(); // Refresh position data after staking
-      onClose();
+      handleRefresh(); // Refresh position data after staking
+      onClose(); // Close modal and refresh position data
     } catch (error) {
       console.error("Stake failed:", error);
     }
