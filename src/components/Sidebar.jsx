@@ -1,6 +1,6 @@
-
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { useAccount, useDisconnect } from "wagmi";
 
 import {
   FiGrid,
@@ -9,9 +9,12 @@ import {
   FiHelpCircle,
   FiX,
   FiAlertCircle,
+  FiLogOut,
 } from "react-icons/fi";
 
 export default function Sidebar({ mobileOpen, setMobileOpen }) {
+  const { address, isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
 
   const menuItems = [
@@ -40,10 +43,32 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
     },
   ];
 
-  const handleDisconnect = () => {
-    // Add your actual wallet disconnect logic here
-    console.log("Wallet disconnected");
+  // Format address for display
+  const formatAddress = (address) => {
+    if (!address) return "Not Connected";
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
 
+  // Get connection status text
+  const getConnectionStatus = () => {
+    if (isConnected) return "Connected";
+    return "Not Connected";
+  };
+
+  // Get connection status color
+  const getConnectionColor = () => {
+    if (isConnected) return "bg-[#6DD054]";
+    return "bg-gray-500";
+  };
+
+  // Get wallet status text color
+  const getStatusTextColor = () => {
+    if (isConnected) return "text-[#6DD054]";
+    return "text-gray-500";
+  };
+
+  const handleDisconnect = () => {
+    disconnect();
     setShowDisconnectModal(false);
   };
 
@@ -67,7 +92,6 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
         />
       )}
 
-
       {/* =====================================================
           SIDEBAR
       ====================================================== */}
@@ -88,16 +112,11 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
           transition-transform
           duration-300
 
-          ${
-            mobileOpen
-              ? "translate-x-0"
-              : "-translate-x-full"
-          }
+          ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
 
           lg:translate-x-0
         `}
       >
-
         {/* =================================================
             LOGO
         ================================================== */}
@@ -114,22 +133,16 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
             shrink-0
           "
         >
-
           <div>
-
             <h1 className="text-white text-xl font-bold tracking-tight">
               MINI<span className="text-[#6DD054]">LEND</span>
             </h1>
-
             <p className="text-[10px] text-gray-500 tracking-widest mt-1">
               DECENTRALIZED LENDING
             </p>
-
           </div>
 
-
           {/* MOBILE CLOSE */}
-
           <button
             type="button"
             onClick={() => setMobileOpen(false)}
@@ -149,16 +162,13 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
           >
             <FiX size={20} />
           </button>
-
         </div>
-
 
         {/* =================================================
             NAVIGATION
         ================================================== */}
 
         <nav className="flex-1 px-4 py-6 overflow-y-auto">
-
           <p
             className="
               px-3
@@ -173,9 +183,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
             Main Menu
           </p>
 
-
           <div className="space-y-1">
-
             {menuItems.map((item) => {
               const Icon = item.icon;
 
@@ -216,29 +224,18 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
                     `
                   }
                 >
-
-                  <Icon
-                    size={18}
-                    className="shrink-0"
-                  />
-
-                  <span>
-                    {item.name}
-                  </span>
-
+                  <Icon size={18} className="shrink-0" />
+                  <span>{item.name}</span>
                 </NavLink>
               );
             })}
-
           </div>
-
 
           {/* =================================================
               SUPPORT
           ================================================== */}
 
           <div className="mt-8">
-
             <p
               className="
                 px-3
@@ -253,9 +250,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
               Support
             </p>
 
-
             <div className="space-y-1">
-
               {bottomItems.map((item) => {
                 const Icon = item.icon;
 
@@ -291,99 +286,98 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
                       `
                     }
                   >
-
-                    <Icon
-                      size={18}
-                      className="shrink-0"
-                    />
-
-                    <span>
-                      {item.name}
-                    </span>
-
+                    <Icon size={18} className="shrink-0" />
+                    <span>{item.name}</span>
                   </NavLink>
                 );
               })}
-
             </div>
-
           </div>
-
         </nav>
-
 
         {/* =================================================
             WALLET STATUS
         ================================================== */}
 
         <div className="px-4 pb-4 shrink-0">
-
           <div
-            className="
+            className={`
               rounded-2xl
               border
-              border-[#6DD054]/20
-              bg-[#111111]/80
-              backdrop-blur-xl
               p-4
-            "
+              backdrop-blur-xl
+              ${
+                isConnected
+                  ? "border-[#6DD054]/20 bg-[#111111]/80"
+                  : "border-white/10 bg-[#111111]/50"
+              }
+            `}
           >
-
             <div className="flex items-center gap-3">
-
               <div className="relative">
-
                 <div
-                  className="
+                  className={`
                     w-9
                     h-9
                     rounded-full
-                    bg-[#6DD054]/10
-                    border
-                    border-[#6DD054]/20
                     flex
                     items-center
                     justify-center
-                  "
+                    border
+                    ${
+                      isConnected
+                        ? "bg-[#6DD054]/10 border-[#6DD054]/20"
+                        : "bg-gray-500/10 border-gray-500/20"
+                    }
+                  `}
                 >
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#6DD054]" />
+                  <div
+                    className={`w-2.5 h-2.5 rounded-full ${getConnectionColor()}`}
+                  />
                 </div>
 
                 <span
-                  className="
+                  className={`
                     absolute
                     bottom-0
                     right-0
                     w-2.5
                     h-2.5
                     rounded-full
-                    bg-[#6DD054]
+                    ${getConnectionColor()}
                     border-2
                     border-[#111111]
-                  "
+                  `}
                 />
-
               </div>
-
 
               <div className="min-w-0">
-
-                <p className="text-xs text-gray-500">
-                  Wallet Status
+                <p className={`text-xs ${getStatusTextColor()}`}>
+                  {getConnectionStatus()}
                 </p>
-
                 <p className="text-sm text-white font-medium truncate">
-                  Not Connected
+                  {isConnected ? formatAddress(address) : "Not Connected"}
                 </p>
-
+                {isConnected && (
+                  <p className="text-[10px] text-white/30 truncate mt-0.5">
+                    {address}
+                  </p>
+                )}
               </div>
-
             </div>
-
 
             <button
               type="button"
-              className="
+              onClick={() => {
+                if (isConnected) {
+                  setShowDisconnectModal(true);
+                } else {
+                  // Trigger connect wallet flow
+                  // You can import and use useConnect from wagmi here
+                  console.log("Connect wallet clicked");
+                }
+              }}
+              className={`
                 mt-4
                 w-full
                 flex
@@ -392,21 +386,21 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
                 gap-2
                 py-2.5
                 rounded-xl
-                bg-[#6DD054]
                 text-black
                 text-xs
                 font-bold
-                hover:bg-[#7be663]
                 transition
-              "
+                ${
+                  isConnected
+                    ? "bg-[#6DD054] hover:bg-[#7be663]"
+                    : "bg-white/10 text-white/70 hover:bg-white/20"
+                }
+              `}
             >
-             User address
+              {isConnected ? formatAddress(address) : "Connect Wallet"}
             </button>
-
           </div>
-
         </div>
-
 
         {/* =================================================
             FOOTER
@@ -421,43 +415,35 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
             shrink-0
           "
         >
-
           <div className="flex items-center justify-between">
+            <p className="text-[10px] text-gray-600">MiniLend.eth</p>
 
-            <p className="text-[10px] text-gray-600">
-              MiniLend.eth
-            </p>
-
-
-            {/* DISCONNECT */}
-
-            <button
-              type="button"
-              onClick={() => setShowDisconnectModal(true)}
-              aria-label="Disconnect wallet"
-              title="Disconnect wallet"
-              className="
-                w-8
-                h-8
-                rounded-lg
-                flex
-                items-center
-                justify-center
-                text-gray-500
-                hover:text-red-400
-                hover:bg-red-400/10
-                transition
-              "
-            >
-              {/* <FiLogOut size={15} /> */}
-            </button>
-
+            {/* DISCONNECT - Only show when connected */}
+            {isConnected && (
+              <button
+                type="button"
+                onClick={() => setShowDisconnectModal(true)}
+                aria-label="Disconnect wallet"
+                title="Disconnect wallet"
+                className="
+                  w-8
+                  h-8
+                  rounded-lg
+                  flex
+                  items-center
+                  justify-center
+                  text-gray-500
+                  hover:text-red-400
+                  hover:bg-red-400/10
+                  transition
+                "
+              >
+                <FiLogOut size={15} />
+              </button>
+            )}
           </div>
-
         </div>
-
       </aside>
-
 
       {/* =====================================================
           DISCONNECT MODAL
@@ -478,7 +464,6 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
           "
           onClick={() => setShowDisconnectModal(false)}
         >
-
           <div
             className="
               w-full
@@ -492,11 +477,8 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
             "
             onClick={(e) => e.stopPropagation()}
           >
-
             {/* MODAL HEADER */}
-
             <div className="flex items-start justify-between">
-
               <div
                 className="
                   w-11
@@ -513,7 +495,6 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
               >
                 <FiAlertCircle size={21} />
               </div>
-
 
               <button
                 type="button"
@@ -534,29 +515,25 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
               >
                 <FiX size={18} />
               </button>
-
             </div>
 
-
             {/* MODAL CONTENT */}
-
             <div className="mt-5">
-
               <h2 className="text-lg font-bold text-white">
                 Disconnect Wallet?
               </h2>
-
               <p className="mt-2 text-sm leading-6 text-white/45">
                 Are you sure you want to disconnect your wallet from MiniLend?
               </p>
-
+              {address && (
+                <p className="mt-2 text-xs text-white/30 font-mono">
+                  {formatAddress(address)}
+                </p>
+              )}
             </div>
 
-
             {/* MODAL ACTIONS */}
-
             <div className="mt-6 flex gap-3">
-
               <button
                 type="button"
                 onClick={() => setShowDisconnectModal(false)}
@@ -578,7 +555,6 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
                 Cancel
               </button>
 
-
               <button
                 type="button"
                 onClick={handleDisconnect}
@@ -597,15 +573,10 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
               >
                 Disconnect
               </button>
-
             </div>
-
           </div>
-
         </div>
       )}
-
     </>
   );
 }
-
