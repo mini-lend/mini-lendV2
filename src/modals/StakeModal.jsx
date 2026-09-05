@@ -39,7 +39,7 @@ export default function StakeModal({ isOpen, onClose }) {
       // Refresh data after successful transaction
       // await triggerRefresh();
       setAmount("");
-      handleRefresh(); // Refresh position data after staking
+      // handleRefresh(); // Refresh position data after staking
       onClose();
     } catch (error) {
       console.error("Stake failed:", error);
@@ -144,7 +144,7 @@ export default function StakeModal({ isOpen, onClose }) {
             <div className="flex items-center justify-between">
               <span className="text-xs text-white/35">After staking</span>
               <span className="text-xs font-medium text-white">
-                {formatEther(BigInt(currentCollateral + (Number(amount) || 0)))}{" "}
+                {formatEther(currentCollateral + (Number(amount) || 0))}{" "}
                 ETH
               </span>
             </div>
