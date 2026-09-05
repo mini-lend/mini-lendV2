@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import GetStarted from "./Connect";
 import {
@@ -12,6 +11,19 @@ import {
 
 export default function Hero() {
   const [modalOpen, setModalOpen] = useState(false);
+
+  // =====================================================
+  // HERO ENTRANCE ANIMATION
+  // =====================================================
+  const [heroVisible, setHeroVisible] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setHeroVisible(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // =====================================================
   // TYPING TEXT
@@ -69,7 +81,6 @@ export default function Hero() {
   const [numbersStarted, setNumbersStarted] = useState(false);
 
   useEffect(() => {
-    // Small delay so the Hero visual appears first
     const startTimer = setTimeout(() => {
       setNumbersStarted(true);
     }, 450);
@@ -89,7 +100,6 @@ export default function Hero() {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Smooth ease-out
       const easedProgress =
         1 - Math.pow(1 - progress, 3);
 
@@ -292,7 +302,7 @@ export default function Hero() {
             MAIN HERO
         ====================================================== */}
         <div
-          className="
+          className={`
             relative
             z-10
             mx-auto
@@ -305,7 +315,15 @@ export default function Hero() {
             pt-32
             sm:px-8
             lg:px-10
-          "
+            transition-all
+            duration-1000
+            ease-out
+            ${
+              heroVisible
+                ? "translate-y-0 opacity-100"
+                : "translate-y-6 opacity-0"
+            }
+          `}
         >
           <div
             className="
@@ -321,7 +339,22 @@ export default function Hero() {
             {/* =================================================
                 LEFT CONTENT
             ================================================== */}
-            <div className="max-w-2xl">
+            <div
+              className={`
+                max-w-2xl
+                transition-all
+                duration-1000
+                ease-out
+                ${
+                  heroVisible
+                    ? "translate-x-0 opacity-100"
+                    : "-translate-x-8 opacity-0"
+                }
+              `}
+              style={{
+                transitionDelay: "150ms",
+              }}
+            >
 
               {/* STATUS BADGE */}
               <div
@@ -407,6 +440,7 @@ export default function Hero() {
               {/* BUTTONS */}
               <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
 
+                {/* GET STARTED */}
                 <button
                   type="button"
                   onClick={() => setModalOpen(true)}
@@ -443,6 +477,7 @@ export default function Hero() {
                   />
                 </button>
 
+                {/* LEARN MORE */}
                 <a
                   href="#how-it-works"
                   className="
@@ -506,7 +541,25 @@ export default function Hero() {
             {/* =================================================
                 RIGHT PRODUCT VISUAL
             ================================================== */}
-            <div className="relative mx-auto w-full max-w-[520px]">
+            <div
+              className={`
+                relative
+                mx-auto
+                w-full
+                max-w-[520px]
+                transition-all
+                duration-1000
+                ease-out
+                ${
+                  heroVisible
+                    ? "translate-x-0 opacity-100"
+                    : "translate-x-8 opacity-0"
+                }
+              `}
+              style={{
+                transitionDelay: "350ms",
+              }}
+            >
 
               {/* OUTER GLOW */}
               <div
@@ -537,6 +590,10 @@ export default function Hero() {
                   p-4
                   shadow-[0_30px_100px_rgba(0,0,0,0.5)]
                   backdrop-blur-xl
+                  transition-all
+                  duration-500
+                  hover:border-[#6DD054]/20
+                  hover:shadow-[0_35px_110px_rgba(0,0,0,0.55)]
                   sm:p-5
                 "
               >
@@ -610,7 +667,7 @@ export default function Hero() {
                 <div className="grid gap-3 sm:grid-cols-2">
 
                   {/* COLLATERAL */}
-                  <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4">
+                  <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4 transition-all duration-300 hover:border-white/10 hover:bg-white/[0.04]">
 
                     <div className="flex items-center justify-between">
 
@@ -635,7 +692,7 @@ export default function Hero() {
                   </div>
 
                   {/* BORROWED */}
-                  <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4">
+                  <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4 transition-all duration-300 hover:border-white/10 hover:bg-white/[0.04]">
 
                     <div className="flex items-center justify-between">
 
@@ -748,8 +805,18 @@ export default function Hero() {
                   py-3
                   shadow-[0_20px_50px_rgba(0,0,0,0.4)]
                   backdrop-blur-xl
+                  transition-all
+                  duration-700
+                  ease-out
                   sm:block
                 "
+                style={{
+                  transitionDelay: "700ms",
+                  opacity: heroVisible ? 1 : 0,
+                  transform: heroVisible
+                    ? "translateY(0)"
+                    : "translateY(12px)",
+                }}
               >
 
                 <div className="flex items-center gap-3">
@@ -791,8 +858,18 @@ export default function Hero() {
                   py-3
                   shadow-[0_20px_50px_rgba(0,0,0,0.4)]
                   backdrop-blur-xl
+                  transition-all
+                  duration-700
+                  ease-out
                   sm:block
                 "
+                style={{
+                  transitionDelay: "850ms",
+                  opacity: heroVisible ? 1 : 0,
+                  transform: heroVisible
+                    ? "translateY(0)"
+                    : "translateY(-12px)",
+                }}
               >
 
                 <div className="flex items-center gap-2">
@@ -984,4 +1061,3 @@ export default function Hero() {
     </>
   );
 }
-

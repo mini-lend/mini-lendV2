@@ -1,3 +1,4 @@
+
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
 
 @import "tailwindcss";
@@ -43,10 +44,14 @@ body {
   color: #ffffff;
 
   font-family: "Space Grotesk", sans-serif;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ============================================================
    LANDING PAGE GRID
+   KEEPING YOUR ORIGINAL BACKGROUND
 ============================================================ */
 
 body::before {
@@ -58,12 +63,19 @@ body::before {
   z-index: 0;
 
   background-image:
-    linear-gradient(to right, rgba(109, 208, 84, 0.055) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(109, 208, 84, 0.055) 1px, transparent 1px);
+    linear-gradient(
+      to right,
+      rgba(109, 208, 84, 0.055) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(109, 208, 84, 0.055) 1px,
+      transparent 1px
+    );
 
   background-size: 55px 55px;
 
-  /* Fade the grid around the edges */
   mask-image: radial-gradient(
     ellipse at center,
     black 0%,
@@ -81,6 +93,7 @@ body::before {
 
 /* ============================================================
    SUBTLE GRID GLOW
+   KEEPING YOUR ORIGINAL BACKGROUND
 ============================================================ */
 
 body::after {
@@ -141,3 +154,34 @@ svg {
   display: block;
   max-width: 100%;
 }
+
+/* ============================================================
+   TEXT SELECTION
+============================================================ */
+
+::selection {
+  background: rgba(109, 208, 84, 0.25);
+  color: #ffffff;
+}
+
+/* ============================================================
+   SCROLLBAR
+============================================================ */
+
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090909;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(109, 208, 84, 0.35);
+}
+
