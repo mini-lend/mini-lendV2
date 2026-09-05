@@ -25,6 +25,8 @@ import {
   prepareSetLiquidationBonusTx,
   getUserPosition,
   getUserHealth,
+  //   health
+  getHealthFactor,
   getTokenPrice,
   getUsdValue,
   getBorrowableAmount,
@@ -367,6 +369,61 @@ export const useMLending = () => {
     });
   };
 
+  //   Health factor hook to fetch health factor and related data
+  const useHealthFactor = (userAddress) => {
+    // console.log("useHealthFactor called with:", userAddress, chainId, publicClient);
+    const [healthData, setHealthData] = useState({
+      healthFactor: 0,
+      isHealthy: false,
+      isLiquidatable: false,
+      collateralValue: "0",
+      debtValue: "0",
+      status: "LOADING",
+      message: "Loading health factor...",
+    });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+      const fetchHealthFactor = async () => {
+        if (!userAddress || !chainId || !publicClient) {
+          setHealthData({
+            ...healthData,
+            status: "ERROR",
+            message: "Missing required parameters",
+          });
+          setLoading(false);
+          return;
+        }
+
+        try {
+          setLoading(true);
+          const data = await getHealthFactor({
+            userAddress,
+            chainId,
+            publicClient,
+          });
+          setHealthData(data);
+          // console.log("Fetched health factor data:", data);
+        } catch (error) {
+          console.error("Error fetching health factor:", error);
+          setHealthData({
+            healthFactor: 0,
+            isHealthy: false,
+            isLiquidatable: false,
+            status: "ERROR",
+            message: `Error: ${error.message}`,
+          });
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchHealthFactor();
+    }, [userAddress, chainId, publicClient]);
+
+    return { healthData, loading };
+  };
+
   const useTokenPrice = (tokenAddress) => {
     return useReadContract({
       address: chainId ? getLendingContract(chainId) : undefined,
@@ -529,6 +586,7 @@ export const useMLending = () => {
     useTokenPrice,
     useTokenApproval,
     useApprovedTokensCount,
+    useHealthFactor,
 
     // Read functions (non-hook)
     fetchUserPosition,
