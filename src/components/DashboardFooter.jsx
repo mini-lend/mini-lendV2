@@ -1,10 +1,5 @@
 import { Link } from "react-router-dom";
-import {
-  FiGithub,
-  FiTwitter,
-  FiMail,
-  FiArrowUp,
-} from "react-icons/fi";
+import { FiGithub, FiTwitter, FiMail, FiArrowUp } from "react-icons/fi";
 
 export default function DashboardFooter() {
   const scrollToTop = () => {
@@ -17,18 +12,15 @@ export default function DashboardFooter() {
   return (
     <footer className="w-full border-t border-white/[0.06] bg-[#080a08] text-white">
       <div className="mx-auto w-full max-w-[1450px] px-6 py-14 sm:px-8 lg:px-10">
-
         {/* =====================================================
             MAIN FOOTER CONTENT
         ====================================================== */}
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
-
           {/* =================================================
               BRAND
           ================================================== */}
           <div className="max-w-md">
-
-                {/* LOGO */}
+            {/* LOGO */}
 
             <button
               type="button"
@@ -51,7 +43,6 @@ export default function DashboardFooter() {
               }}
               className="group inline-flex items-center gap-2.5 text-left"
             >
-
               <div
                 className="
                   relative
@@ -70,7 +61,6 @@ export default function DashboardFooter() {
                   group-hover:shadow-[0_0_30px_rgba(109,208,84,0.25)]
                 "
               >
-
                 <img
                   className="w-[50px] object-contain"
                   src="/favicon.png"
@@ -89,11 +79,9 @@ export default function DashboardFooter() {
                     blur-md
                   "
                 />
-
               </div>
 
               <div className="leading-none">
-
                 <span className="block text-sm font-bold tracking-[0.15em] text-white">
                   MINI
                 </span>
@@ -101,16 +89,13 @@ export default function DashboardFooter() {
                 <span className="block text-sm font-bold tracking-[0.15em] text-[#6DD054]">
                   LEND
                 </span>
-
               </div>
-
             </button>
 
             {/* Description */}
             <p className="mt-7 max-w-[390px] text-[15px] leading-7 text-white/40">
-              A decentralized lending protocol designed to give
-              users simple and transparent access to crypto-backed
-              liquidity.
+              A decentralized lending protocol designed to give users simple and
+              transparent access to crypto-backed liquidity.
             </p>
 
             {/* Protocol Status */}
@@ -124,7 +109,6 @@ export default function DashboardFooter() {
 
             {/* Social Icons */}
             <div className="mt-7 flex items-center gap-3">
-
               {/* GitHub */}
               <a
                 href="https://github.com/"
@@ -155,7 +139,6 @@ export default function DashboardFooter() {
               >
                 <FiMail size={18} />
               </a>
-
             </div>
           </div>
 
@@ -168,7 +151,6 @@ export default function DashboardFooter() {
             </h3>
 
             <div className="flex flex-col gap-5">
-
               <Link
                 to="/markets"
                 className="text-[15px] text-white/45 transition-colors duration-200 hover:text-white"
@@ -189,7 +171,6 @@ export default function DashboardFooter() {
               >
                 Help Center
               </Link>
-
             </div>
           </div>
 
@@ -202,7 +183,6 @@ export default function DashboardFooter() {
             </h3>
 
             <div className="flex flex-col gap-5">
-
               <Link
                 to="/whitepaper"
                 className="text-[15px] text-white/80 transition-colors duration-200 hover:text-white"
@@ -223,7 +203,6 @@ export default function DashboardFooter() {
               >
                 Contact Us
               </Link>
-
             </div>
           </div>
 
@@ -236,7 +215,6 @@ export default function DashboardFooter() {
             </h3>
 
             <div className="flex flex-col gap-5">
-
               <Link
                 to="/privacy"
                 className="text-[15px] text-white/80 transition-colors duration-200 hover:text-white"
@@ -257,7 +235,6 @@ export default function DashboardFooter() {
               >
                 Risk Disclosure
               </Link>
-
             </div>
           </div>
         </div>
@@ -271,7 +248,6 @@ export default function DashboardFooter() {
             BOTTOM FOOTER
         ====================================================== */}
         <div className="flex flex-col gap-5 pt-7 sm:flex-row sm:items-center sm:justify-between">
-
           {/* Copyright */}
           <p className="text-[13px] text-white/30">
             © {new Date().getFullYear()} MiniLend.eth. All rights reserved.
@@ -298,7 +274,6 @@ export default function DashboardFooter() {
               />
             </span>
           </button>
-
         </div>
       </div>
     </footer>
