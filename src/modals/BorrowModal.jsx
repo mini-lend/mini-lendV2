@@ -20,17 +20,18 @@ export default function BorrowModal({ isOpen, onClose }) {
   const { address: account } = useAccount();
   const chainId = useChainId();
   const {
-    borrowAsset,
-    isPending,
-    isConfirming,
-    txHash,
+    
     triggerRefresh,
     positionData,
     debtValue,
     healthFactor,
   } = usePositionData();
 
-  const {fetchBorrowableAmount} = useMLending();
+
+  const {borrowAsset,
+    isPending,
+    isConfirming,
+    txHash,fetchBorrowableAmount} = useMLending();
 
   useEffect(() => {
     if (isOpen && account && positionData.stakedAsset) {
@@ -65,7 +66,7 @@ export default function BorrowModal({ isOpen, onClose }) {
 
     try {
       await borrowAsset(tokenAddress, amount);
-      await triggerRefresh();
+      // await triggerRefresh();
       setAmount("");
       onClose();
     } catch (error) {

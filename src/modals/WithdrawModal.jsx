@@ -11,23 +11,17 @@ import { useAccount } from "wagmi";
 import { formatEther, parseEther } from "viem";
 import { useMLending } from "../hooks/useMLending";
 
-
 export default function WithdrawModal({ isOpen, onClose }) {
   const [amount, setAmount] = useState("");
   const { address: account } = useAccount();
   const {
-    // withdrawCollateral,
-    isPending,
-    isConfirming,
-    txHash,
-    triggerRefresh,
     positionData,
     getAvailableCollateral,
     healthFactor,
     hasDebt,
   } = usePositionData();
 
-  const { withdrawCollateral } = useMLending();
+  const { withdrawCollateral, isPending, isConfirming, txHash } = useMLending();
 
   if (!isOpen) return null;
 
@@ -44,7 +38,7 @@ export default function WithdrawModal({ isOpen, onClose }) {
 
     try {
       await withdrawCollateral(amount);
-      await triggerRefresh();
+      // await triggerRefresh();
       setAmount("");
       onClose();
     } catch (error) {
@@ -129,7 +123,9 @@ export default function WithdrawModal({ isOpen, onClose }) {
             <span className="text-xs text-white/40">Withdraw amount</span>
             <span className="text-xs text-white/40">
               Available:{" "}
-              <span className="text-white/70">{formatEther(available)} ETH</span>
+              <span className="text-white/70">
+                {formatEther(available)} ETH
+              </span>
             </span>
           </div>
 
@@ -140,7 +136,7 @@ export default function WithdrawModal({ isOpen, onClose }) {
                 min="0"
                 step="0.01"
                 value={formatEther(amount)}
-                onChange={(e) => setAmount(parseEther(e.target.value))}
+                onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
                 disabled={isLoading}
                 className="w-full bg-transparent outline-none text-xl font-semibold placeholder:text-white/15 disabled:opacity-50"
@@ -173,7 +169,10 @@ export default function WithdrawModal({ isOpen, onClose }) {
                 Remaining collateral
               </span>
               <span className="text-xs text-white">
-                {formatEther(BigInt(Math.max(0, collateral - (Number(amount) || 0))))} ETH
+                {formatEther(
+                  BigInt(Math.max(0, collateral - (Number(amount) || 0))),
+                )}{" "}
+                ETH
               </span>
             </div>
             <div className="h-px bg-white/[0.06]" />

@@ -10,20 +10,15 @@ import {
 import { parseEther, formatEther } from "viem";
 import { usePositionData } from "../hooks/usePositionData";
 import { useAccount, useBalance } from "wagmi";
+import { useMLending } from "../hooks/useMLending";
 
 export default function AddCollateralModal({ isOpen, onClose }) {
   const [amount, setAmount] = useState("");
   const { address: account } = useAccount();
   const { data: balanceData } = useBalance({ address: account });
-  const { 
-    stakeEth, 
-    isPending, 
-    isConfirming,
-    txHash,
-    triggerRefresh,
-    positionData,
-    collateralValue,
-  } = usePositionData();
+  const { triggerRefresh, positionData, collateralValue } = usePositionData();
+
+  const { stakeEth, isPending, isConfirming, txHash } = useMLending();
 
   if (!isOpen) return null;
 
@@ -40,7 +35,7 @@ export default function AddCollateralModal({ isOpen, onClose }) {
 
     try {
       await stakeEth(amount);
-      await triggerRefresh();
+      // await triggerRefresh();
       setAmount("");
       onClose();
     } catch (error) {
@@ -54,7 +49,8 @@ export default function AddCollateralModal({ isOpen, onClose }) {
     return "Add ETH";
   };
 
-  const isDisabled = !amount || Number(amount) <= 0 || Number(amount) > balance || isLoading;
+  const isDisabled =
+    !amount || Number(amount) <= 0 || Number(amount) > balance || isLoading;
 
   return (
     <div
@@ -73,7 +69,9 @@ export default function AddCollateralModal({ isOpen, onClose }) {
             </div>
             <div>
               <h2 className="text-base font-semibold">Add Collateral</h2>
-              <p className="text-xs text-white/35 mt-0.5">Increase your ETH collateral</p>
+              <p className="text-xs text-white/35 mt-0.5">
+                Increase your ETH collateral
+              </p>
             </div>
           </div>
           <button
@@ -90,7 +88,8 @@ export default function AddCollateralModal({ isOpen, onClose }) {
           <div className="flex justify-between mb-2">
             <span className="text-xs text-white/40">Amount</span>
             <span className="text-xs text-white/40">
-              Balance: <span className="text-white/70">{balance.toFixed(4)} ETH</span>
+              Balance:{" "}
+              <span className="text-white/70">{balance.toFixed(4)} ETH</span>
             </span>
           </div>
 
@@ -106,7 +105,9 @@ export default function AddCollateralModal({ isOpen, onClose }) {
                 disabled={isLoading}
                 className="w-full bg-transparent outline-none text-xl font-semibold placeholder:text-white/15 disabled:opacity-50"
               />
-              <span className="px-3 py-2 rounded-lg bg-white/[0.05] text-xs">ETH</span>
+              <span className="px-3 py-2 rounded-lg bg-white/[0.05] text-xs">
+                ETH
+              </span>
             </div>
             <div className="px-4 pb-3 flex justify-end">
               <button
@@ -123,28 +124,41 @@ export default function AddCollateralModal({ isOpen, onClose }) {
           <div className="mt-4 rounded-xl border border-white/[0.07] bg-white/[0.02] p-4 space-y-3">
             <div className="flex justify-between">
               <span className="text-xs text-white/35">Current collateral</span>
-              <span className="text-xs text-white/70">{formatEther(currentCollateral)} ETH</span>
+              <span className="text-xs text-white/70">
+                {formatEther(currentCollateral)} ETH
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-xs text-white/35">New collateral</span>
               <span className="text-xs text-white">
-                {(Number(formatEther(currentCollateral)) + (Number(formatEther(amount)) || 0))} ETH
+                {Number(formatEther(currentCollateral)) +
+                  (Number(formatEther(amount)) || 0)}{" "}
+                ETH
               </span>
             </div>
             <div className="h-px bg-white/[0.06]" />
             <div className="flex justify-between">
               <span className="text-xs text-white/35">Collateral Value</span>
               <span className="text-xs font-medium text-[#6DD054]">
-                ${(collateralValue + (Number(amount) || 0) * (collateralValue / (currentCollateral || 1))).toFixed(2)}
+                $
+                {(
+                  collateralValue +
+                  (Number(amount) || 0) *
+                    (collateralValue / (currentCollateral || 1))
+                ).toFixed(2)}
               </span>
             </div>
           </div>
 
           {/* Warning */}
           <div className="mt-4 flex gap-3 rounded-xl border border-[#6DD054]/10 bg-[#6DD054]/[0.04] p-3">
-            <FiAlertCircle className="shrink-0 mt-0.5 text-[#6DD054]" size={15} />
+            <FiAlertCircle
+              className="shrink-0 mt-0.5 text-[#6DD054]"
+              size={15}
+            />
             <p className="text-[11px] leading-5 text-white/40">
-              Adding collateral increases your position's safety and allows you to borrow more.
+              Adding collateral increases your position's safety and allows you
+              to borrow more.
             </p>
           </div>
 
@@ -152,7 +166,9 @@ export default function AddCollateralModal({ isOpen, onClose }) {
           {txHash && (
             <div className="mt-3 flex items-center gap-2 p-2 rounded-lg bg-[#6DD054]/5 border border-[#6DD054]/10">
               <FiCheckCircle className="text-[#6DD054]" size={14} />
-              <span className="text-xs text-white/60">Transaction: {txHash.slice(0, 6)}...{txHash.slice(-4)}</span>
+              <span className="text-xs text-white/60">
+                Transaction: {txHash.slice(0, 6)}...{txHash.slice(-4)}
+              </span>
             </div>
           )}
 
@@ -175,7 +191,10 @@ export default function AddCollateralModal({ isOpen, onClose }) {
               ) : (
                 <>
                   {getButtonText()}
-                  <FiArrowUpRight size={16} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <FiArrowUpRight
+                    size={16}
+                    className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  />
                 </>
               )}
             </button>

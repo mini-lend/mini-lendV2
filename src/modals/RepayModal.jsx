@@ -10,21 +10,16 @@ import {
 import { usePositionData } from "../hooks/usePositionData";
 import { useAccount, useBalance } from "wagmi";
 import { formatEther } from "viem";
+import { useMLending } from "../hooks/useMLending";
 
 export default function RepayModal({ isOpen, onClose }) {
   const [amount, setAmount] = useState("");
   const { address: account } = useAccount();
   const { data: balanceData } = useBalance({ address: account });
-  const {
-    repayAsset,
-    isPending,
-    isConfirming,
-    txHash,
-    triggerRefresh,
-    positionData,
-    debtValue,
-    healthFactor,
-  } = usePositionData();
+  const { positionData, debtValue, healthFactor } =
+    usePositionData();
+
+  const { repayAsset, isPending, isConfirming, txHash } = useMLending();
 
   if (!isOpen) return null;
 
@@ -42,7 +37,7 @@ export default function RepayModal({ isOpen, onClose }) {
 
     try {
       await repayAsset(debtToken, amount);
-      await triggerRefresh();
+      // await triggerRefresh();
       setAmount("");
       onClose();
     } catch (error) {
@@ -167,7 +162,8 @@ export default function RepayModal({ isOpen, onClose }) {
             <div className="flex justify-between">
               <span className="text-xs text-white/35">Remaining debt</span>
               <span className="text-xs text-white">
-                {formatEther(BigInt(Math.max(0, debt - (Number(amount) || 0))))} USDC
+                {formatEther(BigInt(Math.max(0, debt - (Number(amount) || 0))))}{" "}
+                USDC
               </span>
             </div>
             <div className="h-px bg-white/[0.06]" />
