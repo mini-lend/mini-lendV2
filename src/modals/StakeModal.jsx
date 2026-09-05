@@ -10,26 +10,22 @@ import {
 import { parseEther, formatEther } from "viem";
 import { usePositionData } from "../hooks/usePositionData";
 import { useAccount, useBalance } from "wagmi";
+import { useMLending } from "../hooks/useMLending";
 
 export default function StakeModal({ isOpen, onClose }) {
   const [amount, setAmount] = useState("");
   const { address: account } = useAccount();
   const { data: balanceData } = useBalance({ address: account });
-  const {
-    stakeEth,
-    isPending,
-    isConfirming,
-    txHash,
-    triggerRefresh,
-    positionData,
-    collateralValue,
-  } = usePositionData();
+  const { handleRefresh, positionData, collateralValue } = usePositionData();
+  const { isPending, isConfirming, txHash, stakeEth } = useMLending();
 
   if (!isOpen) return null;
 
   const balance = balanceData ? parseFloat(balanceData.formatted) : 0;
   const currentCollateral = parseFloat(positionData.stakedAmount || "0");
   const isLoading = isPending || isConfirming;
+  const isDisabled =
+    !amount || Number(amount) <= 0 || Number(amount) > balance || isLoading;
 
   const handleMax = () => {
     setAmount(balance.toString());
@@ -41,22 +37,24 @@ export default function StakeModal({ isOpen, onClose }) {
     try {
       await stakeEth(amount);
       // Refresh data after successful transaction
-      await triggerRefresh();
+      // await triggerRefresh();
       setAmount("");
+      handleRefresh(); // Refresh position data after staking
       onClose();
     } catch (error) {
       console.error("Stake failed:", error);
     }
   };
 
+  // useEffect(() => {
+  //   handleRefresh(); // Refresh position data when the modal opens
+  // }, [isOpen]);
+
   const getButtonText = () => {
     if (isPending) return "Confirming...";
     if (isConfirming) return "Processing...";
     return "Stake ETH";
   };
-
-  const isDisabled =
-    !amount || Number(amount) <= 0 || Number(amount) > balance || isLoading;
 
   return (
     <div
@@ -110,8 +108,8 @@ export default function StakeModal({ isOpen, onClose }) {
                 type="number"
                 min="0"
                 step="0.01"
-                value={formatEther(amount)}
-                onChange={(e) => setAmount(parseEther(e.target.value))}
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
                 disabled={isLoading}
                 className="w-full bg-transparent outline-none text-xl font-semibold text-white placeholder:text-white/15 disabled:opacity-50"
@@ -146,7 +144,8 @@ export default function StakeModal({ isOpen, onClose }) {
             <div className="flex items-center justify-between">
               <span className="text-xs text-white/35">After staking</span>
               <span className="text-xs font-medium text-white">
-                {formatEther(BigInt(currentCollateral + (Number(amount) || 0)))} ETH
+                {formatEther(BigInt(currentCollateral + (Number(amount) || 0)))}{" "}
+                ETH
               </span>
             </div>
             <div className="h-px bg-white/[0.06]" />
@@ -198,7 +197,7 @@ export default function StakeModal({ isOpen, onClose }) {
             <button
               type="button"
               onClick={handleStake}
-              disabled={isDisabled}
+              disabled={amount > balance ? isDisabled : null}
               className="group h-12 rounded-xl bg-[#6DD054] text-[#0b1609] text-sm font-bold flex items-center justify-center gap-2 transition-all hover:bg-[#7be663] disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {isLoading ? (

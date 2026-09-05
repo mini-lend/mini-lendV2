@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
-import { useAccount } from 'wagmi';
-import { formatUnits } from 'viem';
-import { useMLending } from './useMLending';
+import { useState, useEffect } from "react";
+import { useAccount } from "wagmi";
+import { formatUnits } from "viem";
+import { useMLending } from "./useMLending";
 
 export const usePositionData = () => {
   const { address: account } = useAccount();
   const { fetchUserPosition, fetchUsdValue, useHealthFactor } = useMLending();
   const { healthData, loading: healthLoading } = useHealthFactor(account);
-  
+
   const [positionData, setPositionData] = useState({
     stakedAsset: "",
     stakedAmount: "0",
@@ -19,6 +19,7 @@ export const usePositionData = () => {
   const [totalPositionValue, setTotalPositionValue] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refresh, setRefresh] = useState(0);
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -54,11 +55,12 @@ export const usePositionData = () => {
         if (position.stakedAsset && position.stakedAmount !== "0") {
           const collateralVal = await fetchUsdValue(
             position.stakedAsset,
-            position.stakedAmount
+            position.stakedAmount,
           );
-          collateralNum = collateralVal !== null 
-            ? parseFloat(formatUnits(BigInt(collateralVal), 18)) 
-            : 0;
+          collateralNum =
+            collateralVal !== null
+              ? parseFloat(formatUnits(BigInt(collateralVal), 18))
+              : 0;
         }
         setCollateralValue(collateralNum);
 
@@ -67,17 +69,15 @@ export const usePositionData = () => {
         if (position.debtAsset && position.debtAmount !== "0") {
           const debtVal = await fetchUsdValue(
             position.debtAsset,
-            position.debtAmount
+            position.debtAmount,
           );
-          debtNum = debtVal !== null 
-            ? parseFloat(formatUnits(BigInt(debtVal), 18)) 
-            : 0;
+          debtNum =
+            debtVal !== null ? parseFloat(formatUnits(BigInt(debtVal), 18)) : 0;
         }
         setDebtValue(debtNum);
 
         // Calculate total position value
         setTotalPositionValue(collateralNum - debtNum);
-
       } catch (err) {
         console.error("Error fetching data:", err.message);
         setError(err.message);
@@ -87,14 +87,19 @@ export const usePositionData = () => {
     };
 
     fetchAllData();
-  }, [account]);
+  }, [account, refresh]);
 
   // Derived values
   const hasPosition = positionData.stakedAmount !== "0";
-  const hasDebt = positionData.debtAmount !== "0" && positionData.debtAsset !== "";
+  const hasDebt =
+    positionData.debtAmount !== "0" && positionData.debtAsset !== "";
   const isHealthy = healthData?.isHealthy ?? false;
   const healthFactor = healthData?.healthFactor ?? 0;
   const healthStatus = healthData?.status ?? "NO_POSITION";
+
+  const handleRefresh = () => {
+    setRefresh(prev => prev + 1); // Toggle state to trigger re-render
+  };
 
   return {
     // Raw data
@@ -103,30 +108,36 @@ export const usePositionData = () => {
     debtValue,
     totalPositionValue,
     healthData,
-    
+
     // Loading states
     loading: loading || healthLoading,
     healthLoading,
-    
+    handleRefresh,
+    refresh, // Expose refresh state for external use
+
     // Error
     error,
-    
+
     // Derived values
     hasPosition,
     hasDebt,
     isHealthy,
     healthFactor,
     healthStatus,
-    
+
     // Helpers
     formatHealthFactor: () => {
-      if (healthFactor === Infinity || healthFactor === null || healthFactor === undefined) {
+      if (
+        healthFactor === Infinity ||
+        healthFactor === null ||
+        healthFactor === undefined
+      ) {
         return "∞";
       }
       if (healthFactor === 0) return "0.00";
       return healthFactor.toFixed(2);
     },
-    
+
     getStatusColor: (status = healthStatus) => {
       const colors = {
         HEALTHY: "text-green-500",
@@ -141,7 +152,7 @@ export const usePositionData = () => {
       };
       return colors[status] || "text-gray-500";
     },
-    
+
     getStatusBg: (status = healthStatus) => {
       const backgrounds = {
         HEALTHY: "bg-green-500/10 border-green-500/20",
@@ -154,18 +165,23 @@ export const usePositionData = () => {
       };
       return backgrounds[status] || "bg-white/5 border-white/10";
     },
-    
+
     getHealthBarPercentage: () => {
-      if (!healthFactor || healthFactor === Infinity || healthStatus === "NO_POSITION") {
+      if (
+        !healthFactor ||
+        healthFactor === Infinity ||
+        healthStatus === "NO_POSITION"
+      ) {
         return 0;
       }
       if (healthStatus === "ERROR") return 0;
       return Math.min((healthFactor / 2) * 100, 100);
     },
-    
+
     getHealthBarColor: () => {
       if (healthFactor === Infinity) return "bg-green-500";
-      if (healthStatus === "ERROR" || healthStatus === "NO_POSITION") return "bg-gray-500";
+      if (healthStatus === "ERROR" || healthStatus === "NO_POSITION")
+        return "bg-gray-500";
       if (healthStatus === "LIQUIDATABLE") return "bg-red-700";
       if (healthFactor > 1.5) return "bg-green-500";
       if (healthFactor > 1.2) return "bg-yellow-500";
@@ -173,17 +189,17 @@ export const usePositionData = () => {
       if (healthFactor >= 1) return "bg-red-500";
       return "bg-red-700";
     },
-    
+
     getBorrowUtilization: () => {
       if (collateralValue === 0) return 0;
       return Math.min((debtValue / collateralValue) * 100, 100);
     },
-    
+
     getAvailableCollateral: () => {
       // For ETH: staked amount - used collateral (simplified)
       const stakedEth = parseFloat(positionData.stakedAmount || "0");
       const usedEth = parseFloat(positionData.debtAmount || "0");
       return Math.max(stakedEth - usedEth, 0);
-    }
+    },
   };
 };
