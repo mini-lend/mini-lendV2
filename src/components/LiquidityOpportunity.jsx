@@ -6,8 +6,11 @@ import {
 } from "react-icons/fi";
 import { formatEther } from "viem";
 import { usePositionData } from "../hooks/usePositionData";
-
+import AddCollateralModal from "../modals/AddCollateralModal";
+import { useState } from "react";
 export default function LiquidityOpportunity() {
+  const [addCollateralModalOpen, setAddCollateralModalOpen] = useState(false);
+
   const {
     positionData,
     collateralValue,
@@ -149,230 +152,238 @@ export default function LiquidityOpportunity() {
   }
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#111111]/80 backdrop-blur-xl overflow-hidden">
-      {/* HEADER */}
-      <div className="flex items-start justify-between gap-4 p-5 sm:p-6 border-b border-white/[0.07]">
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-[#6DD054]/10 border border-[#6DD054]/20 flex items-center justify-center">
-              <FiTrendingDown size={17} className="text-[#6DD054]" />
-            </div>
+    <>
+      <div className="rounded-2xl border border-white/10 bg-[#111111]/80 backdrop-blur-xl overflow-hidden">
+        {/* HEADER */}
+        <div className="flex items-start justify-between gap-4 p-5 sm:p-6 border-b border-white/[0.07]">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl bg-[#6DD054]/10 border border-[#6DD054]/20 flex items-center justify-center">
+                <FiTrendingDown size={17} className="text-[#6DD054]" />
+              </div>
 
-            <div>
-              <h2 className="text-sm font-semibold">Liquidity Opportunity</h2>
-              <p className="text-xs text-white/35 mt-1">
-                Monitor positions that may require attention
-              </p>
+              <div>
+                <h2 className="text-sm font-semibold">Liquidity Opportunity</h2>
+                <p className="text-xs text-white/35 mt-1">
+                  Monitor positions that may require attention
+                </p>
+              </div>
             </div>
           </div>
+
+          {/* STATUS */}
+          <span
+            className={`shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[10px] font-medium ${getStatusColorClass()}`}
+          >
+            <span className={`w-1.5 h-1.5 rounded-full ${getDotColor()}`} />
+            {getStatusDisplay()}
+          </span>
         </div>
 
-        {/* STATUS */}
-        <span
-          className={`shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[10px] font-medium ${getStatusColorClass()}`}
-        >
-          <span className={`w-1.5 h-1.5 rounded-full ${getDotColor()}`} />
-          {getStatusDisplay()}
-        </span>
-      </div>
+        {/* CONTENT */}
+        <div className="p-5 sm:p-6">
+          {/* OPPORTUNITY CARD */}
+          <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-4 sm:p-5">
+            <div className="flex items-start gap-4">
+              {/* ICON */}
+              <div className="w-10 h-10 shrink-0 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
+                <FiShield
+                  size={18}
+                  className={
+                    !hasPosition || showWarning
+                      ? "text-yellow-500"
+                      : "text-[#6DD054]"
+                  }
+                />
+              </div>
 
-      {/* CONTENT */}
-      <div className="p-5 sm:p-6">
-        {/* OPPORTUNITY CARD */}
-        <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-4 sm:p-5">
-          <div className="flex items-start gap-4">
-            {/* ICON */}
-            <div className="w-10 h-10 shrink-0 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
-              <FiShield
-                size={18}
-                className={
-                  !hasPosition || showWarning
-                    ? "text-yellow-500"
-                    : "text-[#6DD054]"
-                }
-              />
-            </div>
+              {/* TEXT */}
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold">
+                      {!hasPosition
+                        ? "No active position"
+                        : healthFactor === Infinity
+                          ? "Position fully safe"
+                          : showWarning
+                            ? "⚠️ Position needs attention"
+                            : "Your position is currently safe"}
+                    </p>
+                    <p className="mt-1 text-xs text-white/35">
+                      {!hasPosition
+                        ? "Start by staking collateral to borrow assets"
+                        : actionText}
+                    </p>
+                  </div>
 
-            {/* TEXT */}
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <div>
-                  <p className="text-sm font-semibold">
-                    {!hasPosition
-                      ? "No active position"
-                      : healthFactor === Infinity
-                        ? "Position fully safe"
-                        : showWarning
-                          ? "⚠️ Position needs attention"
-                          : "Your position is currently safe"}
-                  </p>
-                  <p className="mt-1 text-xs text-white/35">
-                    {!hasPosition
-                      ? "Start by staking collateral to borrow assets"
-                      : actionText}
-                  </p>
+                  {hasPosition && (
+                    <div className="shrink-0">
+                      <span
+                        className={`text-sm font-semibold ${getStatusColor(healthStatus)}`}
+                      >
+                        {safetyLevel.toFixed(1)}%
+                      </span>
+                      <p className="text-[10px] text-white/25 mt-0.5">
+                        Safety level
+                      </p>
+                    </div>
+                  )}
                 </div>
 
+                {/* PROGRESS */}
                 {hasPosition && (
-                  <div className="shrink-0">
-                    <span
-                      className={`text-sm font-semibold ${getStatusColor(healthStatus)}`}
-                    >
-                      {safetyLevel.toFixed(1)}%
-                    </span>
-                    <p className="text-[10px] text-white/25 mt-0.5">
-                      Safety level
-                    </p>
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] text-white/30">
+                        Current health
+                      </span>
+                      <span className="text-[10px] text-white/30">
+                        {healthFactor === Infinity
+                          ? "∞"
+                          : `${safetyLevel.toFixed(1)}%`}
+                      </span>
+                    </div>
+
+                    <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${
+                          safetyLevel >= 75
+                            ? "bg-[#6DD054]"
+                            : safetyLevel >= 45
+                              ? "bg-yellow-500"
+                              : safetyLevel >= 30
+                                ? "bg-orange-500"
+                                : "bg-red-500"
+                        }`}
+                        style={{ width: `${Math.min(safetyLevel, 100)}%` }}
+                      />
+                    </div>
                   </div>
                 )}
               </div>
+            </div>
+          </div>
 
-              {/* PROGRESS */}
-              {hasPosition && (
-                <div className="mt-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] text-white/30">
-                      Current health
-                    </span>
-                    <span className="text-[10px] text-white/30">
-                      {healthFactor === Infinity
-                        ? "∞"
-                        : `${safetyLevel.toFixed(1)}%`}
-                    </span>
-                  </div>
+          {/* INFO ROW */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+            <InfoItem
+              label="Collateral"
+              value={`${formatEther(collateralAmount)} ETH`}
+              subValue={`$${collateralValue.toFixed(2)}`}
+            />
 
-                  <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        safetyLevel >= 75
-                          ? "bg-[#6DD054]"
-                          : safetyLevel >= 45
-                            ? "bg-yellow-500"
-                            : safetyLevel >= 30
-                              ? "bg-orange-500"
-                              : "bg-red-500"
-                      }`}
-                      style={{ width: `${Math.min(safetyLevel, 100)}%` }}
-                    />
-                  </div>
+            <InfoItem
+              label="Borrowed"
+              value={hasDebt ? `${formatEther(debtAmount)} Tokens` : "None"}
+              subValue={
+                hasDebt ? `$${debtValue.toFixed(2)}` : "No borrowed assets"
+              }
+            />
+
+            <InfoItem
+              label="Liquidation Threshold"
+              value="75%"
+              subValue="Of collateral value"
+            />
+          </div>
+
+          {/* WARNING / OPPORTUNITY */}
+          {!hasPosition ? (
+            <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
+              <div className="flex items-start gap-3">
+                <FiAlertTriangle
+                  size={17}
+                  className="mt-0.5 shrink-0 text-white/35"
+                />
+                <div>
+                  <p className="text-xs font-medium text-white">
+                    No active position
+                  </p>
+                  <p className="mt-1 text-[11px] leading-relaxed text-white/35">
+                    Stake ETH to start borrowing assets and earn yield
+                  </p>
                 </div>
-              )}
+              </div>
+              <button
+                type="button"
+                className="group shrink-0 flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-lg bg-[#6DD054] text-[#0b1609] text-xs font-semibold transition-all duration-200 hover:bg-[#7be663] hover:-translate-y-0.5 active:translate-y-0"
+              >
+                Open Position
+                <FiArrowRight
+                  size={14}
+                  className="transition-transform duration-200 group-hover:translate-x-0.5"
+                />
+              </button>
             </div>
-          </div>
+          ) : showImproveButton ? (
+            <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-xl border border-red-500/10 bg-red-500/[0.04] p-4">
+              <div className="flex items-start gap-3">
+                <FiAlertTriangle
+                  size={17}
+                  className="mt-0.5 shrink-0 text-red-500"
+                />
+                <div>
+                  <p className="text-xs font-medium text-white">
+                    ⚠️ Position needs attention
+                  </p>
+                  <p className="mt-1 text-[11px] leading-relaxed text-white/35">
+                    {healthFactor < 1.05
+                      ? "Your position is close to liquidation. Take immediate action!"
+                      : "Adding collateral can improve your safety level and reduce liquidation risk."}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="group shrink-0 flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-lg bg-red-500 text-white text-xs font-semibold transition-all duration-200 hover:bg-red-600 hover:-translate-y-0.5 active:translate-y-0"
+              >
+                Improve Position
+                <FiArrowRight
+                  size={14}
+                  className="transition-transform duration-200 group-hover:translate-x-0.5"
+                />
+              </button>
+            </div>
+          ) : (
+            <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-xl border border-[#6DD054]/10 bg-[#6DD054]/[0.04] p-4">
+              <div className="flex items-start gap-3">
+                <FiAlertTriangle
+                  size={17}
+                  className="mt-0.5 shrink-0 text-[#6DD054]"
+                />
+                <div>
+                  <p className="text-xs font-medium text-white">
+                    Keep your position healthy
+                  </p>
+                  <p className="mt-1 text-[11px] leading-relaxed text-white/35">
+                    {healthFactor === Infinity
+                      ? "No debt to worry about. You're fully safe!"
+                      : "Your position is healthy. Continue monitoring to maintain safety."}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAddCollateralModalOpen(true)}
+                className="group shrink-0 flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-lg bg-[#6DD054] text-[#0b1609] text-xs font-semibold transition-all duration-200 hover:bg-[#7be663] hover:-translate-y-0.5 active:translate-y-0"
+              >
+                Add Collateral
+                <FiArrowRight
+                  size={14}
+                  className="transition-transform duration-200 group-hover:translate-x-0.5"
+                />
+              </button>
+            </div>
+          )}
         </div>
-
-        {/* INFO ROW */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
-          <InfoItem
-            label="Collateral"
-            value={`${formatEther(collateralAmount)} ETH`}
-            subValue={`$${collateralValue.toFixed(2)}`}
-          />
-
-          <InfoItem
-            label="Borrowed"
-            value={hasDebt ? `${formatEther(debtAmount)} Tokens` : "None"}
-            subValue={
-              hasDebt ? `$${debtValue.toFixed(2)}` : "No borrowed assets"
-            }
-          />
-
-          <InfoItem
-            label="Liquidation Threshold"
-            value="75%"
-            subValue="Of collateral value"
-          />
-        </div>
-
-        {/* WARNING / OPPORTUNITY */}
-        {!hasPosition ? (
-          <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
-            <div className="flex items-start gap-3">
-              <FiAlertTriangle
-                size={17}
-                className="mt-0.5 shrink-0 text-white/35"
-              />
-              <div>
-                <p className="text-xs font-medium text-white">
-                  No active position
-                </p>
-                <p className="mt-1 text-[11px] leading-relaxed text-white/35">
-                  Stake ETH to start borrowing assets and earn yield
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              className="group shrink-0 flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-lg bg-[#6DD054] text-[#0b1609] text-xs font-semibold transition-all duration-200 hover:bg-[#7be663] hover:-translate-y-0.5 active:translate-y-0"
-            >
-              Open Position
-              <FiArrowRight
-                size={14}
-                className="transition-transform duration-200 group-hover:translate-x-0.5"
-              />
-            </button>
-          </div>
-        ) : showImproveButton ? (
-          <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-xl border border-red-500/10 bg-red-500/[0.04] p-4">
-            <div className="flex items-start gap-3">
-              <FiAlertTriangle
-                size={17}
-                className="mt-0.5 shrink-0 text-red-500"
-              />
-              <div>
-                <p className="text-xs font-medium text-white">
-                  ⚠️ Position needs attention
-                </p>
-                <p className="mt-1 text-[11px] leading-relaxed text-white/35">
-                  {healthFactor < 1.05
-                    ? "Your position is close to liquidation. Take immediate action!"
-                    : "Adding collateral can improve your safety level and reduce liquidation risk."}
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              className="group shrink-0 flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-lg bg-red-500 text-white text-xs font-semibold transition-all duration-200 hover:bg-red-600 hover:-translate-y-0.5 active:translate-y-0"
-            >
-              Improve Position
-              <FiArrowRight
-                size={14}
-                className="transition-transform duration-200 group-hover:translate-x-0.5"
-              />
-            </button>
-          </div>
-        ) : (
-          <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-xl border border-[#6DD054]/10 bg-[#6DD054]/[0.04] p-4">
-            <div className="flex items-start gap-3">
-              <FiAlertTriangle
-                size={17}
-                className="mt-0.5 shrink-0 text-[#6DD054]"
-              />
-              <div>
-                <p className="text-xs font-medium text-white">
-                  Keep your position healthy
-                </p>
-                <p className="mt-1 text-[11px] leading-relaxed text-white/35">
-                  {healthFactor === Infinity
-                    ? "No debt to worry about. You're fully safe!"
-                    : "Your position is healthy. Continue monitoring to maintain safety."}
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              className="group shrink-0 flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-lg bg-[#6DD054] text-[#0b1609] text-xs font-semibold transition-all duration-200 hover:bg-[#7be663] hover:-translate-y-0.5 active:translate-y-0"
-            >
-              Add Collateral
-              <FiArrowRight
-                size={14}
-                className="transition-transform duration-200 group-hover:translate-x-0.5"
-              />
-            </button>
-          </div>
-        )}
       </div>
-    </div>
+      {/* MODAL */}
+      <AddCollateralModal
+        isOpen={addCollateralModalOpen}
+        onClose={() => setAddCollateralModalOpen(false)}
+      />
+    </>
   );
 }
 
