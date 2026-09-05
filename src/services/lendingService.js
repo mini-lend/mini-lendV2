@@ -1,5 +1,5 @@
-import { parseEther, formatEther, formatUnits } from "viem";
-import { LENDING_ABI } from "../utils/contractAbi";
+import { parseEther, formatEther, formatUnits, getContract } from "viem";
+import { LENDING_ABI, ERC20_ABI } from "../utils/contractAbi";
 import { CONTRACT_ADDRESSES } from "../utils/chains.address";
 
 /**
@@ -231,6 +231,170 @@ export const getUserHealth = async ({ userAddress, chainId, publicClient }) => {
   });
 
   return health;
+};
+
+/**
+ * Calculate health factor for a user's position
+ * @param {Object} params
+ * @param {string} params.userAddress - User's wallet address
+ * @param {number} params.chainId - Chain ID
+ * @param {Object} params.publicClient - Viem public client
+ * @param {Object} params.walletClient - Viem wallet client (optional, for writing)
+ * @returns {Promise<Object>} Health factor data
+ */
+export const getHealthFactor = async ({
+  userAddress,
+  chainId,
+  publicClient,
+}) => {
+  try {
+    // First get user position
+    const position = await getUserPosition({
+      userAddress,
+      chainId,
+      publicClient,
+    });
+
+    // If no position exists
+    const stakedAmount = BigInt(position.stakedAmount);
+    const debtAmount = BigInt(position.debtAmount);
+
+    if (!position || stakedAmount === 0n) {
+      return {
+        healthFactor: Infinity,
+        isHealthy: true,
+        isLiquidatable: false,
+        collateralValue: "0",
+        debtValue: "0",
+        status: "NO_POSITION",
+        message: "No active position found",
+      };
+    }
+
+    // Get USD values with proper decimals
+    const collateralValueRaw = await getUsdValue({
+      tokenAddress: position.stakedAsset,
+      amount: position.stakedAmount,
+      chainId,
+      publicClient,
+    });
+
+    console.log(
+      "Collateral value raw:",
+      collateralValueRaw,
+      "for staked asset:",
+      position.stakedAsset,
+    );
+
+    let debtValueRaw = 0n;
+
+    if (debtAmount > 0n) {
+      debtValueRaw = await getUsdValue({
+        tokenAddress: position.debtAsset,
+        amount: debtAmount,
+        chainId,
+        publicClient,
+      });
+      console.log(
+        "Debt value raw:",
+        debtValueRaw,
+        "for debt asset:",
+        position.debtAsset,
+      );
+    }
+
+    // Constants from contract
+    const LIQUIDATION_THRESHOLD = 7500; // 75%
+    const PCT_DENOMINATOR = 10000; // 100%
+
+    // getUsdValue already returns 18 decimal USD value
+    // So we format it directly with 18 decimals
+    const collateralNum = parseFloat(
+      formatUnits(BigInt(collateralValueRaw), 18),
+    );
+    const debtNum = parseFloat(formatUnits(BigInt(debtValueRaw), 18));
+    console.log(
+      "Collateral USD value:",
+      collateralNum,
+      "Debt USD value:",
+      debtNum,
+    );
+
+    let healthFactor;
+    let isHealthy = false;
+    let isLiquidatable = false;
+    let status = "";
+    let message = "";
+    const threshold = LIQUIDATION_THRESHOLD / PCT_DENOMINATOR;
+    healthFactor = (collateralNum * threshold) / debtNum;
+
+    console.log(
+      "Calculated health factor:",
+      healthFactor,
+      "with threshold:",
+      threshold,
+    );
+
+    if (debtNum === 0) {
+      healthFactor = Infinity;
+      isHealthy = true;
+      isLiquidatable = false;
+      status = "HEALTHY_NO_DEBT";
+      message = "No debt, position is fully collateralized";
+    } else {
+      // const threshold = LIQUIDATION_THRESHOLD / PCT_DENOMINATOR;
+      // healthFactor = (collateralNum * threshold) / debtNum;
+
+      if (healthFactor >= 1) {
+        isHealthy = true;
+        isLiquidatable = healthFactor < 1;
+
+        if (healthFactor > 1.5) {
+          status = "HEALTHY";
+          message = "Position is well collateralized";
+        } else if (healthFactor > 1.2) {
+          status = "MODERATE";
+          message =
+            "Position is moderately healthy, consider adding collateral";
+        } else if (healthFactor > 1.05) {
+          status = "WARNING";
+          message = "Position is close to liquidation, take action soon";
+        } else {
+          status = "CRITICAL";
+          message = "Position is at risk of liquidation, take immediate action";
+        }
+      } else {
+        isHealthy = false;
+        isLiquidatable = healthFactor < 1;
+        status = "LIQUIDATABLE";
+        message = "Position is undercollateralized and can be liquidated";
+      }
+    }
+
+    return {
+      healthFactor,
+      isHealthy,
+      isLiquidatable,
+      collateralValue: collateralNum.toFixed(2),
+      debtValue: debtNum.toFixed(2),
+      status,
+      message,
+      collateralRatio: debtNum > 0 ? collateralNum / debtNum : Infinity,
+      liquidationThreshold: threshold,
+      // Keep raw values if needed
+      collateralValueRaw,
+      debtValueRaw,
+    };
+  } catch (error) {
+    console.error("Error calculating health factor:", error);
+    return {
+      healthFactor: 0,
+      isHealthy: false,
+      isLiquidatable: false,
+      status: "ERROR",
+      message: `Error: ${error.message}`,
+    };
+  }
 };
 
 /**
