@@ -46,28 +46,18 @@ export default function BorrowModal({ isOpen, onClose }) {
   // POSITION DATA
   // =====================================================
 
-  const {
-    handleRefresh,
+  const {    
+    triggerRefresh,
     positionData,
     debtValue,
     healthFactor,
   } = usePositionData();
 
-  // =====================================================
-  // LENDING HOOK
-  // =====================================================
 
-  const {
-    borrowAsset,
+  const {borrowAsset,
     isPending,
     isConfirming,
-    txHash,
-    fetchBorrowableAmount,
-  } = useMLending();
-
-  // =====================================================
-  // FETCH BORROWABLE AMOUNT
-  // =====================================================
+    txHash,fetchBorrowableAmount} = useMLending();
 
   useEffect(() => {
     if (
@@ -183,16 +173,8 @@ export default function BorrowModal({ isOpen, onClose }) {
     const borrowingAmount = amount;
 
     try {
-      // borrowAsset waits for transaction confirmation
-      const result = await borrowAsset(
-        tokenAddress,
-        borrowingAmount
-      );
-
-      // Refresh dashboard/position data
-      handleRefresh();
-
-      // Clear input
+      await borrowAsset(tokenAddress, amount);
+      // await triggerRefresh();
       setAmount("");
 
       // Close Borrow modal

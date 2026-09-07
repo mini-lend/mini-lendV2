@@ -5,7 +5,7 @@ import HowItWorks from "../components/How It Work";
 import Benefits from "../components/Benefit";
 import Assets from "../components/Asset";
 import FAQ from "../components/FAQ";
-import ContactUs from "../components/Contact Us";
+import ContactUs from "../components/ContactUs";
 import Footer from "../components/Footer";
 
 export default function Landing() {

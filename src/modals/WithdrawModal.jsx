@@ -8,8 +8,6 @@ import {
 } from "react-icons/fi";
 import { usePositionData } from "../hooks/usePositionData";
 import { useMLending } from "../hooks/useMLending";
-import { useAccount } from "wagmi";
-import ActivityResultModal from "../components/ActivityResultModal";
 
 export default function WithdrawModal({ isOpen, onClose }) {
   const [amount, setAmount] = useState("");
@@ -28,18 +26,15 @@ export default function WithdrawModal({ isOpen, onClose }) {
   const { address: account } = useAccount();
 
   const {
-    handleRefresh,
     positionData,
     getAvailableCollateral,
     healthFactor,
     hasDebt,
   } = usePositionData();
 
-  const {
-    withdrawCollateral,
-    isPending,
-    isConfirming,
-  } = useMLending();
+  const { withdrawCollateral, isPending, isConfirming, txHash } = useMLending();
+
+  if (!isOpen) return null;
 
   const collateral = parseFloat(positionData.stakedAmount || "0");
   const available = Number(getAvailableCollateral()) || 0;
@@ -69,9 +64,8 @@ export default function WithdrawModal({ isOpen, onClose }) {
     const withdrawalAmount = amount;
 
     try {
-      const result = await withdrawCollateral(withdrawalAmount);
-
-      handleRefresh();
+      await withdrawCollateral(amount);
+      // await triggerRefresh();
       setAmount("");
       onClose();
 
@@ -122,40 +116,93 @@ export default function WithdrawModal({ isOpen, onClose }) {
   const canWithdraw = !hasDebt || healthFactor > 1.5;
 
   return (
-    <>
-      {isOpen && (
-        <>
-          {/* No Collateral */}
-          {collateral === 0 ? (
-            <div
-              className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
-              onClick={onClose}
-            >
-              <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#111111] p-6">
-                <div className="flex items-center gap-3">
-                  <FiAlertCircle
-                    className="text-yellow-500"
-                    size={24}
-                  />
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+      onClick={onClose}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md rounded-2xl border border-white/10 bg-[#111111] shadow-[0_25px_80px_rgba(0,0,0,0.55)] overflow-hidden"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-5 border-b border-white/[0.07]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center">
+              <FiArrowUpRight size={18} className="text-[#6DD054]" />
+            </div>
+            <div>
+              <h2 className="text-base font-semibold">Withdraw ETH</h2>
+              <p className="text-xs text-white/35 mt-0.5">
+                Withdraw available collateral
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            disabled={isLoading}
+            className="w-9 h-9 rounded-lg flex items-center justify-center text-white/40 hover:text-white hover:bg-white/[0.05] disabled:opacity-50"
+          >
+            <FiX size={19} />
+          </button>
+        </div>
 
-                  <div>
-                    <h3 className="text-white font-semibold">
-                      No Collateral to Withdraw
-                    </h3>
+        {/* Body */}
+        <div className="p-5">
+          <div className="flex justify-between mb-2">
+            <span className="text-xs text-white/40">Withdraw amount</span>
+            <span className="text-xs text-white/40">
+              Available:{" "}
+              <span className="text-white/70">
+                {formatEther(available)} ETH
+              </span>
+            </span>
+          </div>
 
-                    <p className="text-white/40 text-sm mt-1">
-                      You don't have any ETH staked as collateral.
-                    </p>
-                  </div>
-                </div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.025] focus-within:border-[#6DD054]/40 transition">
+            <div className="flex items-center px-4 h-16">
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={formatEther(amount)}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="0.00"
+                disabled={isLoading}
+                className="w-full bg-transparent outline-none text-xl font-semibold placeholder:text-white/15 disabled:opacity-50"
+              />
+              <span className="px-3 py-2 rounded-lg bg-white/[0.05] text-xs">
+                ETH
+              </span>
+            </div>
+            <div className="px-4 pb-3 flex justify-end">
+              <button
+                onClick={handleMax}
+                disabled={isLoading}
+                className="text-[10px] font-semibold text-[#6DD054] hover:text-white transition disabled:opacity-50"
+              >
+                MAX
+              </button>
+            </div>
+          </div>
 
-                <button
-                  onClick={onClose}
-                  className="mt-4 w-full h-12 rounded-xl bg-[#6DD054] text-[#0b1609] font-bold"
-                >
-                  Close
-                </button>
-              </div>
+          {/* Summary */}
+          <div className="mt-4 rounded-xl border border-white/[0.07] bg-white/[0.02] p-4 space-y-3">
+            <div className="flex justify-between">
+              <span className="text-xs text-white/35">Current collateral</span>
+              <span className="text-xs text-white/70">
+                {formatEther(collateral)} ETH
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-xs text-white/35">
+                Remaining collateral
+              </span>
+              <span className="text-xs text-white">
+                {formatEther(
+                  BigInt(Math.max(0, collateral - (Number(amount) || 0))),
+                )}{" "}
+                ETH
+              </span>
             </div>
           ) : (
             /* Withdraw Modal */
