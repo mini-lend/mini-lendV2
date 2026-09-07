@@ -100,7 +100,7 @@ export default function ActionButtons() {
           />
 
           {/* ADD COLLATERAL */}
-          <ActionButton
+          {/* <ActionButton
             icon={FiPlus}
             title="Add Collateral"
             text="Add more ETH"
@@ -108,7 +108,7 @@ export default function ActionButtons() {
             disabled={isActionInProgress || !canAddCollateral}
             loading={isActionInProgress}
             warning={!canAddCollateral && account}
-          />
+          /> */}
 
           {/* BORROW */}
           <ActionButton

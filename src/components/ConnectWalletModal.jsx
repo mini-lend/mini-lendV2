@@ -4,6 +4,8 @@ import {
   FiX,
 } from "react-icons/fi";
 
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+
 export default function ConnectWalletModal({ open, onClose }) {
   if (!open) return null;
 
@@ -93,6 +95,7 @@ export default function ConnectWalletModal({ open, onClose }) {
         <button
           type="button"
           id="connectWalletBtn"
+          onClick={<  ConnectButton />}
           className="
             mt-6
             flex

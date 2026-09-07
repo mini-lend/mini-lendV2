@@ -6,10 +6,14 @@ import {
 } from "react-icons/fi";
 import { formatEther } from "viem";
 import { usePositionData } from "../hooks/usePositionData";
-import AddCollateralModal from "../modals/AddCollateralModal";
+import StakeModal from "../modals/StakeModal";
+// import AddCollateralModal from "../modals/AddCollateralModal";
 import { useState } from "react";
+
+
+
 export default function LiquidityOpportunity() {
-  const [addCollateralModalOpen, setAddCollateralModalOpen] = useState(false);
+  const [stakeModalOpen, setStakeModalOpen] = useState(false);
 
   const {
     positionData,
@@ -365,7 +369,7 @@ export default function LiquidityOpportunity() {
               </div>
               <button
                 type="button"
-                onClick={() => setAddCollateralModalOpen(true)}
+                onClick={() => setStakeModalOpen(true)}
                 className="group shrink-0 flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-lg bg-[#6DD054] text-[#0b1609] text-xs font-semibold transition-all duration-200 hover:bg-[#7be663] hover:-translate-y-0.5 active:translate-y-0"
               >
                 Add Collateral
@@ -379,9 +383,9 @@ export default function LiquidityOpportunity() {
         </div>
       </div>
       {/* MODAL */}
-      <AddCollateralModal
-        isOpen={addCollateralModalOpen}
-        onClose={() => setAddCollateralModalOpen(false)}
+      <StakeModal
+        isOpen={stakeModalOpen}
+        onClose={() => setStakeModalOpen(false)}
       />
     </>
   );
