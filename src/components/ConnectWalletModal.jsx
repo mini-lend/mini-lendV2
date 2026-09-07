@@ -3,6 +3,7 @@ import {
   FiShield,
   FiX,
 } from "react-icons/fi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 // import { ConnectButton } from "@rainbow-me/rainbowkit";
 
@@ -105,16 +106,14 @@ export default function ConnectWalletModal({ open, onClose }) {
             justify-center
             gap-2
             rounded-xl
-            bg-[#6DD054]
             text-sm
             font-bold
             text-[#0b1609]
             transition
-            hover:bg-[#7ae360]
             active:scale-[0.98]
           "
         >
-          Connect Wallet
+         <ConnectButton />
 
           <FiArrowUpRight />
         </button>

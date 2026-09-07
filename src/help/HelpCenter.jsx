@@ -10,6 +10,7 @@ import {
   FiChevronRight,
 } from "react-icons/fi";
 import Footer from "../components/Footer";
+import DashboardFooter from "../components/DashboardFooter";
 
 export default function HelpCenter() {
   const navigate = useNavigate();
@@ -367,7 +368,7 @@ export default function HelpCenter() {
           FOOTER
       ====================================================== */}
 
-      <Footer />
+      <DashboardFooter />
 
     </div>
   );

@@ -1,4 +1,5 @@
 // modals/AddCollateralModal.js
+
 import { useState } from "react";
 import {
   FiX,
@@ -7,45 +8,160 @@ import {
   FiAlertCircle,
   FiCheckCircle,
 } from "react-icons/fi";
-import { parseEther, formatEther } from "viem";
 import { usePositionData } from "../hooks/usePositionData";
 import { useAccount, useBalance } from "wagmi";
 import { useMLending } from "../hooks/useMLending";
 
 export default function AddCollateralModal({ isOpen, onClose }) {
   const [amount, setAmount] = useState("");
+
+  // =====================================================
+  // REUSABLE ACTIVITY RESULT MODAL
+  // =====================================================
+
+  const [resultModal, setResultModal] = useState({
+    isOpen: false,
+    status: "success",
+    title: "",
+    message: "",
+    activity: "",
+    amount: "",
+    asset: "",
+    transactionHash: "",
+  });
+
+  // =====================================================
+  // WALLET
+  // =====================================================
+
   const { address: account } = useAccount();
   const { data: balanceData } = useBalance({ address: account });
   const { triggerRefresh, positionData, collateralValue } = usePositionData();
 
   const { stakeEth, isPending, isConfirming, txHash } = useMLending();
 
-  if (!isOpen) return null;
+  // =====================================================
+  // LENDING HOOK
+  // =====================================================
 
-  const balance = balanceData ? parseFloat(balanceData.formatted) : 0;
-  const currentCollateral = parseFloat(positionData.stakedAmount || "0");
+  const {
+    stakeEth,
+    isPending,
+    isConfirming,
+    txHash,
+  } = useMLending();
+
+  // =====================================================
+  // VALUES
+  // =====================================================
+
+  const balance = balanceData
+    ? parseFloat(balanceData.formatted)
+    : 0;
+
+  const currentCollateral = parseFloat(
+    positionData?.stakedAmount || "0"
+  );
+
   const isLoading = isPending || isConfirming;
 
+  const isDisabled =
+    !amount ||
+    Number(amount) <= 0 ||
+    Number(amount) > balance ||
+    isLoading;
+
+  // =====================================================
+  // MAX
+  // =====================================================
+
   const handleMax = () => {
+    if (isLoading) return;
+
     setAmount(balance.toString());
   };
 
+  // =====================================================
+  // CLOSE RESULT MODAL
+  // =====================================================
+
+  const closeResultModal = () => {
+    setResultModal((prev) => ({
+      ...prev,
+      isOpen: false,
+    }));
+  };
+
+  // =====================================================
+  // ADD COLLATERAL
+  // =====================================================
+
   const handleAddCollateral = async () => {
-    if (!amount || Number(amount) <= 0) return;
+    if (
+      !amount ||
+      Number(amount) <= 0 ||
+      Number(amount) > balance ||
+      isLoading
+    ) {
+      return;
+    }
+
+    const collateralAmount = amount;
 
     try {
       await stakeEth(amount);
       // await triggerRefresh();
       setAmount("");
+
+      // Close Add Collateral modal
       onClose();
+
+      // Show reusable SUCCESS modal
+      setResultModal({
+        isOpen: true,
+        status: "success",
+        title: "Transaction Successful",
+        message:
+          "Your ETH has been successfully added to your collateral.",
+        activity: "Add Collateral",
+        amount: `${collateralAmount} ETH`,
+        asset: "ETH",
+        transactionHash: result?.hash || "",
+      });
     } catch (error) {
-      console.error("Add collateral failed:", error);
+      console.error(
+        "Add collateral failed:",
+        error
+      );
+
+      // Close Add Collateral modal
+      onClose();
+
+      // Show reusable INCOMPLETE modal
+      setResultModal({
+        isOpen: true,
+        status: "incomplete",
+        title: "Transaction Incomplete",
+        message:
+          error?.shortMessage ||
+          error?.message ||
+          "Your collateral transaction could not be completed. Please try again.",
+        activity: "Add Collateral",
+        amount: `${collateralAmount} ETH`,
+        asset: "ETH",
+        transactionHash: "",
+      });
     }
   };
+
+  // =====================================================
+  // BUTTON TEXT
+  // =====================================================
 
   const getButtonText = () => {
     if (isPending) return "Confirming...";
     if (isConfirming) return "Processing...";
+
     return "Add ETH";
   };
 
@@ -79,9 +195,15 @@ export default function AddCollateralModal({ isOpen, onClose }) {
             disabled={isLoading}
             className="w-9 h-9 rounded-lg flex items-center justify-center text-white/40 hover:text-white hover:bg-white/[0.05] disabled:opacity-50"
           >
-            <FiX size={19} />
-          </button>
-        </div>
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-5 border-b border-white/[0.07]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#6DD054]/10 border border-[#6DD054]/20 flex items-center justify-center">
+                  <FiPlus
+                    size={18}
+                    className="text-[#6DD054]"
+                  />
+                </div>
 
         {/* Body */}
         <div className="p-5">
@@ -111,14 +233,14 @@ export default function AddCollateralModal({ isOpen, onClose }) {
             </div>
             <div className="px-4 pb-3 flex justify-end">
               <button
-                onClick={handleMax}
+                type="button"
+                onClick={onClose}
                 disabled={isLoading}
-                className="text-[10px] font-semibold text-[#6DD054] hover:text-white transition disabled:opacity-50"
+                className="w-9 h-9 rounded-lg flex items-center justify-center text-white/40 hover:text-white hover:bg-white/[0.05] disabled:opacity-50"
               >
-                MAX
+                <FiX size={19} />
               </button>
             </div>
-          </div>
 
           {/* Summary */}
           <div className="mt-4 rounded-xl border border-white/[0.07] bg-white/[0.02] p-4 space-y-3">
@@ -197,10 +319,62 @@ export default function AddCollateralModal({ isOpen, onClose }) {
                   />
                 </>
               )}
-            </button>
+
+              {/* Buttons */}
+              <div className="grid grid-cols-2 gap-3 mt-5">
+
+                {/* Cancel */}
+                <button
+                  type="button"
+                  onClick={onClose}
+                  disabled={isLoading}
+                  className="h-12 rounded-xl border border-white/10 bg-white/[0.03] text-sm text-white/60 hover:text-white hover:bg-white/[0.06] transition disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+
+                {/* Add ETH */}
+                <button
+                  type="button"
+                  onClick={handleAddCollateral}
+                  disabled={isDisabled}
+                  className="group h-12 rounded-xl bg-[#6DD054] text-[#0b1609] text-sm font-bold flex items-center justify-center gap-2 transition-all hover:bg-[#7be663] disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? (
+                    <div className="w-5 h-5 border-2 border-[#0b1609] border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      {getButtonText()}
+
+                      <FiArrowUpRight
+                        size={16}
+                        className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                      />
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+
+      {/* =====================================================
+          ONE REUSABLE ACTIVITY RESULT MODAL
+          KEEP THIS OUTSIDE {isOpen}
+      ====================================================== */}
+
+      <ActivityResultModal
+        isOpen={resultModal.isOpen}
+        status={resultModal.status}
+        title={resultModal.title}
+        message={resultModal.message}
+        activity={resultModal.activity}
+        amount={resultModal.amount}
+        asset={resultModal.asset}
+        transactionHash={resultModal.transactionHash}
+        onClose={closeResultModal}
+      />
+    </>
   );
 }

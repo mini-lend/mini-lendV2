@@ -8,11 +8,83 @@ import {
   FiShield,
   FiX,
 } from "react-icons/fi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 import WalletTransferAnimation from "./WalletTransferAnimation";
 
+/* =========================================================
+   SCROLL REVEAL
+========================================================= */
+
+function ScrollReveal({
+  children,
+  className = "",
+  delay = 0,
+}) {
+  const ref = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const element = ref.current;
+
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+
+          // Animate only once
+          observer.unobserve(element);
+        }
+      },
+      {
+        threshold: 0.12,
+      }
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`
+        transform
+        transition-all
+        duration-700
+        ease-out
+        ${
+          isVisible
+            ? "translate-y-0 opacity-100"
+            : "translate-y-10 opacity-0"
+        }
+        ${className}
+      `}
+      style={{
+        transitionDelay: `${delay}ms`,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* =========================================================
+   BENEFITS
+========================================================= */
+
 export default function Benefits() {
   const [modalOpen, setModalOpen] = useState(false);
+
+  const benefitPoints = [
+    "Keep your assets",
+    "Access stablecoins",
+    "Stay in control",
+    "Simple borrowing",
+  ];
 
   return (
     <>
@@ -29,7 +101,17 @@ export default function Benefits() {
               Why MiniLend
             </p>
 
-            <h2 className="logo text-white text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight">
+            <h2
+              className="
+                logo
+                text-3xl
+                font-semibold
+                leading-tight
+                text-white
+                md:text-4xl
+                lg:text-5xl
+              "
+            >
               Built to make
               <span className="text-[#6DD054]"> crypto lending simple.</span>
             </h2>
@@ -64,12 +146,31 @@ export default function Benefits() {
             ================================================== */}
             <div className="w-full max-w-lg text-white">
               {/* LABEL */}
-              <p className="logo text-[#6DD054] text-xs tracking-[0.2em] uppercase mb-4">
+
+              <p
+                className="
+                  logo
+                  mb-4
+                  text-xs
+                  uppercase
+                  tracking-[0.2em]
+                  text-[#6DD054]
+                "
+              >
                 Why MiniLend
               </p>
 
               {/* HEADING */}
-              <h3 className="logo text-3xl md:text-4xl font-semibold leading-tight">
+
+              <h3
+                className="
+                  logo
+                  text-3xl
+                  font-semibold
+                  leading-tight
+                  md:text-4xl
+                "
+              >
                 Access liquidity without
                 <span className="text-[#6DD054]"> selling your crypto.</span>
               </h3>
@@ -161,10 +262,24 @@ export default function Benefits() {
                   GET STARTED
                   <FiArrowRight
                     className="
-                      text-sm
-                      transition-transform
+                      logo
+                      group
+                      mt-9
+                      flex
+                      h-[42px]
+                      items-center
+                      gap-3
+                      rounded-[14px]
+                      border
+                      border-[#6DD054]/50
+                      px-8
+                      text-xs
+                      text-[#6DD054]
+                      transition-all
                       duration-300
-                      group-hover:translate-x-1
+                      hover:-translate-y-0.5
+                      hover:bg-[#6DD054]
+                      hover:text-black
                     "
                   />
                 </button>
@@ -202,15 +317,10 @@ export default function Benefits() {
                 <div className="flex items-center gap-3 mt-4">
                   <div
                     className="
-                      w-9
-                      h-9
-                      rounded-full
-                      bg-[#6DD054]/10
-                      border
-                      border-[#6DD054]/20
+                      mb-3
                       flex
-                      items-center
-                      justify-center
+                      gap-1
+                      text-[#6DD054]
                     "
                   >
                     <span className="logo text-xs text-[#6DD054]">M</span>

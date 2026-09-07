@@ -6,7 +6,7 @@ import {
 } from "react-icons/fi";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Footer from "../components/Footer";
+import DashboardFooter from "../components/DashboardFooter";
 
 export default function FAQ() {
   const navigate = useNavigate();
@@ -233,7 +233,7 @@ export default function FAQ() {
         </div>
 
       </main>
-<Footer />
+<DashboardFooter />
     </div>
   );
 }
