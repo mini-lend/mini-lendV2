@@ -7,6 +7,7 @@ import {
   FiLayers,
   FiShield,
 } from "react-icons/fi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 import ConnectWalletModal from "./ConnectWalletModal";
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import GetStarted from "./Connect";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import {
   FiArrowRight,
   FiArrowUpRight,
@@ -1006,27 +1007,16 @@ export default function Hero() {
                 justify-center
                 gap-2
                 rounded-xl
-                bg-[#6DD054]
                 text-sm
                 font-bold
                 text-[#0b1609]
                 transition-all
                 duration-300
                 hover:-translate-y-0.5
-                hover:bg-[#7ae360]
                 active:scale-[0.98]
               "
             >
-              Connect Wallet
-
-              <FiArrowUpRight
-                className="
-                  transition-transform
-                  duration-300
-                  group-hover:translate-x-0.5
-                  group-hover:-translate-y-0.5
-                "
-              />
+             <ConnectButton />
             </button>
 
             {/* TERMS */}
