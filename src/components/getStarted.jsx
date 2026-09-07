@@ -1,13 +1,9 @@
-import {
-  FiArrowUpRight,
-  FiShield,
-  FiX,
-} from "react-icons/fi";
+// getStarted.js
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { FiX, FiShield, FiArrowUpRight } from "react-icons/fi";
 
-// import { ConnectButton } from "@rainbow-me/rainbowkit";
-
-export default function ConnectWalletModal({ open, onClose }) {
-  if (!open) return null;
+export default function GetStarted({ isOpen, onClose }) {
+  if (!isOpen) return null;
 
   return (
     <div
@@ -42,6 +38,7 @@ export default function ConnectWalletModal({ open, onClose }) {
         <button
           type="button"
           onClick={onClose}
+          aria-label="Close wallet modal"
           className="
             absolute
             right-4
@@ -61,22 +58,11 @@ export default function ConnectWalletModal({ open, onClose }) {
             hover:text-white
           "
         >
-          <FiX />
+          <FiX size={18} />
         </button>
 
         {/* ICON */}
-        <div
-          className="
-            mx-auto
-            flex
-            h-14
-            w-14
-            items-center
-            justify-center
-            rounded-2xl
-            bg-[#6DD054]/10
-          "
-        >
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#6DD054]/10">
           <FiShield className="text-2xl text-[#6DD054]" />
         </div>
 
@@ -87,53 +73,60 @@ export default function ConnectWalletModal({ open, onClose }) {
 
         {/* DESCRIPTION */}
         <p className="mx-auto mt-2 max-w-sm text-center text-sm leading-6 text-white/40">
-          Connect your wallet to start staking assets and access
-          stablecoin loans through MiniLend.
+          Connect your wallet to start staking assets and access stablecoin
+          loans through MiniLend.
         </p>
 
         {/* CONNECT */}
-        <button
-          type="button"
-          id="connectWalletBtn"
-          // onClick={}
-          className="
-            mt-6
-            flex
-            h-12
-            w-full
-            items-center
-            justify-center
-            gap-2
-            rounded-xl
-            bg-[#6DD054]
-            text-sm
-            font-bold
-            text-[#0b1609]
-            transition
-            hover:bg-[#7ae360]
-            active:scale-[0.98]
-          "
-        >
-          Connect Wallet
+        <ConnectButton.Custom>
+          {({ openConnectModal }) => {
+            const handleConnect = () => {
+              onClose(); // close your custom modal
+              openConnectModal(); // open RainbowKit
+            };
 
-          <FiArrowUpRight />
-        </button>
-
-        {/* <  ConnectButton /> */}
+            return (
+              <button
+                type="button"
+                onClick={handleConnect}
+                className="
+                  mt-6
+                  flex
+                  h-12
+                  w-full
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-xl
+                  bg-[#6DD054]
+                  text-sm
+                  font-bold
+                  text-[#0b1609]
+                  transition
+                  hover:bg-[#7ae360]
+                  active:scale-[0.98]
+                "
+              >
+                Connect Wallet
+                <FiArrowUpRight size={16} />
+              </button>
+            );
+          }}
+        </ConnectButton.Custom>
 
         {/* TERMS */}
         <p className="mt-4 text-center text-[10px] leading-5 text-white/25">
           By connecting, you agree to our{" "}
           <a
             href="#"
-            className="text-white/50 underline underline-offset-2"
+            className="text-white/50 underline underline-offset-2 hover:text-white"
           >
             Terms of Use
           </a>{" "}
           and{" "}
           <a
             href="#"
-            className="text-white/50 underline underline-offset-2"
+            className="text-white/50 underline underline-offset-2 hover:text-white"
           >
             Privacy Policy
           </a>

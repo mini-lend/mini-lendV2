@@ -1,6 +1,5 @@
-
 import { useEffect, useState } from "react";
-import GetStarted from "./Connect";
+import GetStarted from "./getStarted"; // Note: removed curly braces since it's a default export
 import {
   FiArrowRight,
   FiArrowUpRight,
@@ -34,22 +33,15 @@ export default function Hero() {
 
     if (!isDeleting && displayText.length < currentPhrase.length) {
       timeout = setTimeout(() => {
-        setDisplayText(
-          currentPhrase.substring(0, displayText.length + 1)
-        );
+        setDisplayText(currentPhrase.substring(0, displayText.length + 1));
       }, 80);
-    } else if (
-      !isDeleting &&
-      displayText.length === currentPhrase.length
-    ) {
+    } else if (!isDeleting && displayText.length === currentPhrase.length) {
       timeout = setTimeout(() => {
         setIsDeleting(true);
       }, 2200);
     } else if (isDeleting && displayText.length > 0) {
       timeout = setTimeout(() => {
-        setDisplayText(
-          currentPhrase.substring(0, displayText.length - 1)
-        );
+        setDisplayText(currentPhrase.substring(0, displayText.length - 1));
       }, 45);
     } else if (isDeleting && displayText.length === 0) {
       setIsDeleting(false);
@@ -90,26 +82,18 @@ export default function Hero() {
       const progress = Math.min(elapsed / duration, 1);
 
       // Smooth ease-out
-      const easedProgress =
-        1 - Math.pow(1 - progress, 3);
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
 
       setLiquidity(Math.floor(2450 * easedProgress));
 
-      setCollateral(
-        Number((1.25 * easedProgress).toFixed(2))
-      );
+      setCollateral(Number((1.25 * easedProgress).toFixed(2)));
 
-      setBorrowed(
-        Math.floor(2450 * easedProgress)
-      );
+      setBorrowed(Math.floor(2450 * easedProgress));
 
-      setHealth(
-        Math.floor(78 * easedProgress)
-      );
+      setHealth(Math.floor(78 * easedProgress));
 
       if (progress < 1) {
-        animationFrame =
-          requestAnimationFrame(animateNumbers);
+        animationFrame = requestAnimationFrame(animateNumbers);
       } else {
         setLiquidity(2450);
         setCollateral(1.25);
@@ -118,8 +102,7 @@ export default function Hero() {
       }
     };
 
-    animationFrame =
-      requestAnimationFrame(animateNumbers);
+    animationFrame = requestAnimationFrame(animateNumbers);
 
     return () => {
       cancelAnimationFrame(animationFrame);
@@ -243,7 +226,6 @@ export default function Hero() {
           HERO SECTION
       ====================================================== */}
       <section className="relative min-h-screen overflow-hidden bg-[#080908] text-white">
-
         {/* =====================================================
             BACKGROUND GLOW
         ====================================================== */}
@@ -317,12 +299,10 @@ export default function Hero() {
               lg:gap-16
             "
           >
-
             {/* =================================================
                 LEFT CONTENT
             ================================================== */}
             <div className="max-w-2xl">
-
               {/* STATUS BADGE */}
               <div
                 className="
@@ -346,7 +326,6 @@ export default function Hero() {
 
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-[#6DD054]" />
                 </span>
-
                 Decentralized Lending Protocol
               </div>
 
@@ -365,7 +344,6 @@ export default function Hero() {
                 "
               >
                 Unlock liquidity
-
                 <span className="block min-h-[1.1em] text-[#6DD054]">
                   {displayText}
 
@@ -398,15 +376,13 @@ export default function Hero() {
                   sm:leading-8
                 "
               >
-                MiniLend lets you stake your digital assets, borrow
-                stablecoins, and keep your staking rewards. No credit
-                checks. No middlemen. Just decentralized access to
-                liquidity.
+                MiniLend lets you stake your digital assets, borrow stablecoins,
+                and keep your staking rewards. No credit checks. No middlemen.
+                Just decentralized access to liquidity.
               </p>
 
               {/* BUTTONS */}
               <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
-
                 <button
                   type="button"
                   onClick={() => setModalOpen(true)}
@@ -433,7 +409,6 @@ export default function Hero() {
                   "
                 >
                   Get Started
-
                   <FiArrowRight
                     className="
                       transition-transform
@@ -468,7 +443,6 @@ export default function Hero() {
                   "
                 >
                   Learn More
-
                   <FiArrowUpRight
                     className="
                       transition-transform
@@ -478,12 +452,10 @@ export default function Hero() {
                     "
                   />
                 </a>
-
               </div>
 
               {/* TRUST POINTS */}
               <div className="mt-10 flex flex-wrap gap-x-7 gap-y-3">
-
                 <div className="flex items-center gap-2 text-xs text-white/40">
                   <FiShield className="text-[#6DD054]" />
                   Non-custodial
@@ -498,16 +470,13 @@ export default function Hero() {
                   <FiTrendingUp className="text-[#6DD054]" />
                   Keep staking rewards
                 </div>
-
               </div>
-
             </div>
 
             {/* =================================================
                 RIGHT PRODUCT VISUAL
             ================================================== */}
             <div className="relative mx-auto w-full max-w-[520px]">
-
               {/* OUTER GLOW */}
               <div
                 className="
@@ -540,10 +509,8 @@ export default function Hero() {
                   sm:p-5
                 "
               >
-
                 {/* CARD TOP */}
                 <div className="flex items-center justify-between border-b border-white/[0.07] pb-4">
-
                   <div>
                     <p className="text-[10px] uppercase tracking-[0.18em] text-white/30">
                       MiniLend
@@ -555,28 +522,21 @@ export default function Hero() {
                   </div>
 
                   <div className="flex items-center gap-2 rounded-full border border-[#6DD054]/15 bg-[#6DD054]/[0.06] px-2.5 py-1.5">
-
                     <span className="h-1.5 w-1.5 rounded-full bg-[#6DD054]" />
 
                     <span className="text-[10px] font-medium text-[#6DD054]">
                       Active
                     </span>
-
                   </div>
-
                 </div>
 
                 {/* =================================================
                     BALANCE
                 ================================================== */}
                 <div className="py-7">
-
-                  <p className="text-xs text-white/35">
-                    Available liquidity
-                  </p>
+                  <p className="text-xs text-white/35">Available liquidity</p>
 
                   <div className="mt-2 flex items-end gap-2">
-
                     <span
                       className="
                         text-4xl
@@ -595,33 +555,25 @@ export default function Hero() {
                     <span className="mb-1 text-sm font-semibold text-[#6DD054]">
                       USDT
                     </span>
-
                   </div>
 
                   <p className="mt-2 text-xs text-white/30">
                     Borrow against your staked assets
                   </p>
-
                 </div>
 
                 {/* =================================================
                     COLLATERAL / LOAN
                 ================================================== */}
                 <div className="grid gap-3 sm:grid-cols-2">
-
                   {/* COLLATERAL */}
                   <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4">
-
                     <div className="flex items-center justify-between">
-
-                      <span className="text-xs text-white/35">
-                        Collateral
-                      </span>
+                      <span className="text-xs text-white/35">Collateral</span>
 
                       <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#627EEA]/10 text-xs font-bold text-[#627EEA]">
                         Ξ
                       </span>
-
                     </div>
 
                     <p className="mt-4 text-lg font-bold text-white tabular-nums">
@@ -631,22 +583,16 @@ export default function Hero() {
                     <p className="mt-1 text-[10px] text-white/30">
                       Staked asset
                     </p>
-
                   </div>
 
                   {/* BORROWED */}
                   <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4">
-
                     <div className="flex items-center justify-between">
-
-                      <span className="text-xs text-white/35">
-                        Borrowed
-                      </span>
+                      <span className="text-xs text-white/35">Borrowed</span>
 
                       <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#6DD054]/10 text-[10px] font-bold text-[#6DD054]">
                         $
                       </span>
-
                     </div>
 
                     <p className="mt-4 text-lg font-bold text-white tabular-nums">
@@ -656,18 +602,14 @@ export default function Hero() {
                     <p className="mt-1 text-[10px] text-white/30">
                       Stablecoin loan
                     </p>
-
                   </div>
-
                 </div>
 
                 {/* =================================================
                     HEALTH BAR
                 ================================================== */}
                 <div className="mt-3 rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4">
-
                   <div className="flex items-center justify-between">
-
                     <span className="text-xs text-white/40">
                       Position health
                     </span>
@@ -675,11 +617,9 @@ export default function Hero() {
                     <span className="text-xs font-semibold text-[#6DD054]">
                       Healthy
                     </span>
-
                   </div>
 
                   <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
-
                     <div
                       className="
                         h-full
@@ -693,42 +633,31 @@ export default function Hero() {
                         width: `${health}%`,
                       }}
                     />
-
                   </div>
 
                   <div className="mt-2 flex justify-between text-[9px] text-white/25">
-
                     <span>Safe</span>
 
                     <span>{health}%</span>
 
                     <span>Liquidation</span>
-
                   </div>
-
                 </div>
 
                 {/* =================================================
                     BOTTOM ACTION
                 ================================================== */}
                 <div className="mt-4 flex items-center justify-between rounded-2xl bg-[#6DD054]/[0.06] px-4 py-3">
-
                   <div>
-
-                    <p className="text-[10px] text-white/30">
-                      Staking rewards
-                    </p>
+                    <p className="text-[10px] text-white/30">Staking rewards</p>
 
                     <p className="mt-0.5 text-xs font-semibold text-[#6DD054]">
                       Continuing to accrue
                     </p>
-
                   </div>
 
                   <FiTrendingUp className="text-[#6DD054]" />
-
                 </div>
-
               </div>
 
               {/* =================================================
@@ -751,15 +680,12 @@ export default function Hero() {
                   sm:block
                 "
               >
-
                 <div className="flex items-center gap-3">
-
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#6DD054]/10">
                     <FiShield className="text-[#6DD054]" />
                   </div>
 
                   <div>
-
                     <p className="text-[9px] uppercase tracking-wider text-white/25">
                       Protocol
                     </p>
@@ -767,11 +693,8 @@ export default function Hero() {
                     <p className="text-xs font-semibold text-white">
                       Non-custodial
                     </p>
-
                   </div>
-
                 </div>
-
               </div>
 
               {/* =================================================
@@ -794,21 +717,15 @@ export default function Hero() {
                   sm:block
                 "
               >
-
                 <div className="flex items-center gap-2">
-
                   <span className="h-2 w-2 animate-pulse rounded-full bg-[#6DD054]" />
 
                   <span className="text-xs font-medium text-white/60">
                     Lending live
                   </span>
-
                 </div>
-
               </div>
-
             </div>
-
           </div>
         </div>
 
@@ -835,153 +752,12 @@ export default function Hero() {
             }
           `}
         </style>
-
       </section>
 
       {/* =====================================================
           CONNECT WALLET MODAL
       ====================================================== */}
-      {modalOpen && (
-        <div
-          className="
-            fixed
-            inset-0
-            z-[100]
-            flex
-            items-center
-            justify-center
-            bg-black/70
-            px-4
-            backdrop-blur-md
-          "
-          onClick={() => setModalOpen(false)}
-        >
-
-          <div
-            className="
-              relative
-              w-full
-              max-w-md
-              rounded-3xl
-              border
-              border-white/10
-              bg-[#111311]
-              p-6
-              shadow-[0_30px_100px_rgba(0,0,0,0.6)]
-            "
-            onClick={(e) => e.stopPropagation()}
-          >
-
-            {/* CLOSE */}
-            <button
-              type="button"
-              onClick={() => setModalOpen(false)}
-              aria-label="Close wallet modal"
-              className="
-                absolute
-                right-4
-                top-4
-                flex
-                h-9
-                w-9
-                items-center
-                justify-center
-                rounded-xl
-                border
-                border-white/10
-                text-white/40
-                transition
-                hover:border-white/20
-                hover:bg-white/[0.04]
-                hover:text-white
-              "
-            >
-              <FiX />
-            </button>
-
-            {/* ICON */}
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#6DD054]/10">
-              <FiShield className="text-2xl text-[#6DD054]" />
-            </div>
-
-            {/* TITLE */}
-            <h2 className="mt-5 text-center text-xl font-bold text-white">
-              Connect Your Wallet
-            </h2>
-
-            {/* DESCRIPTION */}
-            <p className="mx-auto mt-2 max-w-sm text-center text-sm leading-6 text-white/40">
-              Connect your wallet to start staking assets and access
-              stablecoin loans through MiniLend.
-            </p>
-
-            {/* CONNECT */}
-            <button
-              type="button"
-              id="connectWalletBtn"
-              className="
-                group
-                mt-6
-                flex
-                h-12
-                w-full
-                items-center
-                justify-center
-                gap-2
-                rounded-xl
-                bg-[#6DD054]
-                text-sm
-                font-bold
-                text-[#0b1609]
-                transition-all
-                duration-300
-                hover:-translate-y-0.5
-                hover:bg-[#7ae360]
-                active:scale-[0.98]
-              "
-            >
-              Connect Wallet
-
-              <FiArrowUpRight
-                className="
-                  transition-transform
-                  duration-300
-                  group-hover:translate-x-0.5
-                  group-hover:-translate-y-0.5
-                "
-              />
-            </button>
-
-            {/* TERMS */}
-            <p className="mt-4 text-center text-[10px] leading-5 text-white/25">
-
-              By connecting, you agree to our{" "}
-
-              <a
-                href="#"
-                className="text-white/50 underline underline-offset-2 hover:text-white"
-              >
-                Terms of Use
-              </a>
-
-              {" "}and{" "}
-
-              <a
-                href="#"
-                className="text-white/50 underline underline-offset-2 hover:text-white"
-              >
-                Privacy Policy
-              </a>
-
-              .
-
-            </p>
-
-          </div>
-
-        </div>
-      )}
+      <GetStarted isOpen={modalOpen} onClose={() => setModalOpen(false)} />
     </>
   );
 }
-
