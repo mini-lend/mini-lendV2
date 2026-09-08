@@ -311,6 +311,7 @@ export default function LiquidityOpportunity() {
               </div>
               <button
                 type="button"
+                onClick={() => setStakeModalOpen(true)}
                 className="group shrink-0 flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-lg bg-[#6DD054] text-[#0b1609] text-xs font-semibold transition-all duration-200 hover:bg-[#7be663] hover:-translate-y-0.5 active:translate-y-0"
               >
                 Open Position

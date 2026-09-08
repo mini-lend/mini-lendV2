@@ -496,9 +496,10 @@ export const useMLending = () => {
   };
 
   const withdrawCollateral = async (amount) => {
+    console.log("withdrawCollateral called with amount:", amount);
     return executeTx(
       prepareWithdrawCollateralTx,
-      { amount },
+      { amount, account, chainId },
       {
         successMessage: `Successfully withdrew ${amount} ETH collateral!`,
         eventName: "ETHCollateralWithdrawn",

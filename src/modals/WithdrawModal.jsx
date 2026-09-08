@@ -48,20 +48,18 @@ export default function WithdrawModal({ isOpen, onClose }) {
   };
 
   const handleMax = () => {
-    setAmount(available.toString());
+    setAmount(collateral);
   };
 
   const handleWithdraw = async () => {
-    if (
-      !amount ||
-      Number(amount) <= 0 ||
-      Number(amount) > available ||
-      isLoading
-    ) {
+    if (!amount || Number(amount) <= 0 || Number(amount) > collateral) return;
+
+const amountNum = parseFloat(amount);
+
+    if (amountNum > collateral) {
+      console.error("Withdraw amount exceeds available collateral.");
       return;
     }
-
-    const withdrawalAmount = amount;
 
     try {
       await withdrawCollateral(amount);
@@ -108,10 +106,36 @@ export default function WithdrawModal({ isOpen, onClose }) {
   };
 
   const isDisabled =
-    !amount ||
-    Number(amount) <= 0 ||
-    Number(amount) > available ||
-    isLoading;
+    !amount || Number(amount) <= 0 || Number(amount) > collateral || isLoading;
+
+  if (collateral === 0) {
+    return (
+      <div
+        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+        onClick={onClose}
+      >
+        <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#111111] p-6">
+          <div className="flex items-center gap-3">
+            <FiAlertCircle className="text-yellow-500" size={24} />
+            <div>
+              <h3 className="text-white font-semibold">
+                No Collateral to Withdraw
+              </h3>
+              <p className="text-white/40 text-sm mt-1">
+                You don't have any ETH staked as collateral.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="mt-4 w-full h-12 rounded-xl bg-[#6DD054] text-[#0b1609] font-bold"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const canWithdraw = !hasDebt || healthFactor > 1.5;
 
@@ -151,9 +175,10 @@ export default function WithdrawModal({ isOpen, onClose }) {
           <div className="flex justify-between mb-2">
             <span className="text-xs text-white/40">Withdraw amount</span>
             <span className="text-xs text-white/40">
-              Available:{" "}
+              Available collateral:{" "}
               <span className="text-white/70">
-                {formatEther(available)} ETH
+                {/* {formatEther(available)} ETH */}
+                {formatEther(collateral)} ETH
               </span>
             </span>
           </div>
@@ -177,7 +202,7 @@ export default function WithdrawModal({ isOpen, onClose }) {
             <div className="px-4 pb-3 flex justify-end">
               <button
                 onClick={handleMax}
-                disabled={isLoading}
+                disabled={isLoading || collateral === 0}
                 className="text-[10px] font-semibold text-[#6DD054] hover:text-white transition disabled:opacity-50"
               >
                 MAX

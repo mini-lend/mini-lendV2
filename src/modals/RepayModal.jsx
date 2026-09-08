@@ -11,6 +11,7 @@ import { usePositionData } from "../hooks/usePositionData";
 import { useAccount, useBalance } from "wagmi";
 import { formatEther } from "viem";
 import { useMLending } from "../hooks/useMLending";
+import { resolveEther } from "../services/editInput";
 
 export default function RepayModal({ isOpen, onClose }) {
   const [amount, setAmount] = useState("");
@@ -27,10 +28,13 @@ export default function RepayModal({ isOpen, onClose }) {
   });
 
   const { address: account } = useAccount();
-  const { data: balanceData } = useBalance({ address: account });
-  const { positionData, debtValue, healthFactor } =
-    usePositionData();
-
+  const { positionData, debtValue, healthFactor } = usePositionData();
+  // const { data: balanceData } = useBalance({ address: account });
+  // FIX: Get balance of the debt token (not the collateral)
+  const { data: balanceData } = useBalance({
+    address: account,
+    token: positionData.debtAsset || undefined, // Use the debt token address
+  });
   const { repayAsset, isPending, isConfirming, txHash } = useMLending();
 
   const {
@@ -39,7 +43,7 @@ export default function RepayModal({ isOpen, onClose }) {
     isConfirming,
   } = useMLending();
 
-  const debt = parseFloat(positionData.debtAmount || "0");
+  const debt = BigInt(positionData.debtAmount || "0");
   const debtToken = positionData.debtAsset || "";
   const balance = balanceData ? parseFloat(balanceData.formatted) : 0;
 
@@ -53,7 +57,17 @@ export default function RepayModal({ isOpen, onClose }) {
   };
 
   const handleMax = () => {
-    setAmount(Math.min(debt, balance).toString());
+    if (!debt) return;
+    console.log("formatted debt type:", typeof debt, "value:", debt);
+    console.log("amount type:", typeof amount, "value:", amount);
+    console.log(
+      "balance type:",
+      balanceData.value,
+      "value:",
+      balanceData.decimals,
+    );
+    console.log(BigInt(amount) > BigInt(debt));
+    setAmount(debt);
   };
 
   const handleRepay = async () => {
@@ -107,11 +121,24 @@ export default function RepayModal({ isOpen, onClose }) {
     return "Repay";
   };
 
+  // const isDisabled =
+  //   !amount || Number(amount) <= 0 || Number(amount) > debt || isLoading;
+  //  Button should be disabled when:
+  // 1. No amount entered
+  // 2. Amount is 0 or negative
+  // 3. Amount is greater than debt
+  // 4. Amount is greater than balance
+  // 5. Transaction is in progress
+  const debtWei = BigInt(positionData.debtAmount || "0");
+  const debtFormatted = debtWei > 0n ? formatEther(debtWei) : "0";
+  const amountNum = parseFloat(amount) || 0;
+  const debtNum = parseFloat(debtFormatted) || 0;
   const isDisabled =
+    isLoading ||
     !amount ||
-    Number(amount) <= 0 ||
-    Number(amount) > Math.min(debt, balance) ||
-    isLoading;
+    amountNum <= 0 ||
+    amountNum > debtNum ||
+    amountNum > balance;
 
   return (
     <div
@@ -160,7 +187,7 @@ export default function RepayModal({ isOpen, onClose }) {
                 type="number"
                 min="0"
                 step="1"
-                value={amount}
+                value={resolveEther(amount)}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0"
                 disabled={isLoading}
@@ -184,6 +211,7 @@ export default function RepayModal({ isOpen, onClose }) {
           {/* Summary */}
           <div className="mt-4 rounded-xl border border-white/[0.07] bg-white/[0.02] p-4 space-y-3">
             <div className="flex justify-between">
+              <span className="text-xs text-white/35">Current debt</span>
               <span className="text-xs text-white/70">
                 {formatEther(debt)} USDC
               </span>
@@ -191,8 +219,7 @@ export default function RepayModal({ isOpen, onClose }) {
             <div className="flex justify-between">
               <span className="text-xs text-white/35">Remaining debt</span>
               <span className="text-xs text-white">
-                {formatEther(BigInt(Math.max(0, debt - (Number(amount) || 0))))}{" "}
-                USDC
+                {formatEther(debt)} USDC
               </span>
             </div>
           ) : (
