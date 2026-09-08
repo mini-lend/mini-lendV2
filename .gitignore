@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 .env
+testWithdraw.jsx
+AddCollateralModal.jsx
 
 # Editor directories and files
 .vscode/*

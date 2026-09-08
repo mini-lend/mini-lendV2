@@ -62,14 +62,16 @@ export const prepareRepayTx = ({ tokenAddress, amount, account, chainId }) => {
  * Withdraw ETH collateral
  */
 export const prepareWithdrawCollateralTx = ({ amount, account, chainId }) => {
+  console.log("prepareWithdrawCollateralTx called with amount:", amount, "amount type:", typeof amount);
   const address = getLendingContract(chainId);
   const amountWei = parseEther(amount.toString());
+  console.log("prepareWithdrawCollateralTx - amountWei:", amountWei.toString());
 
   return {
     address,
     abi: LENDING_ABI,
     functionName: "withdrawCollateralEth",
-    args: [amountWei],
+    args: [amount],
     account,
   };
 };

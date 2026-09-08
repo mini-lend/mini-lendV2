@@ -98,7 +98,7 @@ export const usePositionData = () => {
   const healthStatus = healthData?.status ?? "NO_POSITION";
 
   const handleRefresh = () => {
-    setRefresh(prev => prev + 1); // Toggle state to trigger re-render
+    setRefresh((prev) => prev + 1); // Toggle state to trigger re-render
   };
 
   return {
@@ -196,10 +196,20 @@ export const usePositionData = () => {
     },
 
     getAvailableCollateral: () => {
-      // For ETH: staked amount - used collateral (simplified)
       const stakedEth = parseFloat(positionData.stakedAmount || "0");
       const usedEth = parseFloat(positionData.debtAmount || "0");
-      return Math.max(stakedEth - usedEth, 0);
+
+      // If there's debt, calculate available collateral based on health factor
+      if (usedEth > 0) {
+        // Only allow withdrawal if health factor is above 1.5
+        if (healthFactor < 1.5) return 0;
+        // Calculate max withdrawable amount
+        const maxWithdraw = stakedEth - usedEth / 0.75; // 0.75 is the liquidation threshold
+        return Math.max(0, maxWithdraw);
+      }
+
+      // No debt, can withdraw all
+      return stakedEth;
     },
   };
 };
