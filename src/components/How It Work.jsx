@@ -13,11 +13,7 @@ import {
    SCROLL REVEAL COMPONENT
 ========================================================= */
 
-function ScrollReveal({
-  children,
-  className = "",
-  delay = 0,
-}) {
+function ScrollReveal({ children, className = "", delay = 0 }) {
   const ref = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -37,7 +33,7 @@ function ScrollReveal({
       },
       {
         threshold: 0.12,
-      }
+      },
     );
 
     observer.observe(element);
@@ -53,11 +49,7 @@ function ScrollReveal({
         transition-all
         duration-700
         ease-out
-        ${
-          isVisible
-            ? "translate-y-0 opacity-100"
-            : "translate-y-10 opacity-0"
-        }
+        ${isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}
         ${className}
       `}
       style={{
@@ -152,8 +144,8 @@ export default function HowItWorks() {
         min-h-screen
         overflow-hidden
         bg-[#080908]
-        pt-32
-        pb-24
+        pt-4
+        pb-6
         text-white
       "
     >
@@ -194,13 +186,11 @@ export default function HowItWorks() {
       ====================================================== */}
 
       <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-
         {/* =================================================
             HEADER
         ================================================== */}
 
         <ScrollReveal className="mx-auto max-w-3xl text-center">
-
           {/* Small label */}
 
           <div
@@ -222,7 +212,6 @@ export default function HowItWorks() {
             "
           >
             <FiTrendingUp />
-
             Simple. Secure. Decentralized.
           </div>
 
@@ -237,11 +226,7 @@ export default function HowItWorks() {
               md:text-6xl
             "
           >
-            How{" "}
-            <span className="text-[#6DD054]">
-              MiniLend
-            </span>{" "}
-            Works
+            How <span className="text-[#6DD054]">MiniLend</span> Works
           </h1>
 
           {/* Description */}
@@ -258,11 +243,10 @@ export default function HowItWorks() {
               sm:leading-8
             "
           >
-            MiniLend makes decentralized borrowing simple. Stake your
-            digital assets, access stablecoin liquidity, repay your loan,
-            and withdraw your assets when you're ready.
+            MiniLend makes decentralized borrowing simple. Stake your digital
+            assets, access stablecoin liquidity, repay your loan, and withdraw
+            your assets when you're ready.
           </p>
-
         </ScrollReveal>
 
         {/* =================================================
@@ -270,7 +254,6 @@ export default function HowItWorks() {
         ================================================== */}
 
         <div className="relative mt-20">
-
           {/* Connecting line - desktop */}
 
           <div
@@ -291,15 +274,11 @@ export default function HowItWorks() {
           />
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-
             {steps.map((step, index) => {
               const Icon = step.icon;
 
               return (
-                <ScrollReveal
-                  key={step.number}
-                  delay={index * 120}
-                >
+                <ScrollReveal key={step.number} delay={index * 120}>
                   <div
                     className="
                       group
@@ -319,11 +298,9 @@ export default function HowItWorks() {
                       hover:shadow-[0_20px_60px_rgba(0,0,0,0.35)]
                     "
                   >
-
                     {/* Number + Icon */}
 
                     <div className="flex items-center justify-between">
-
                       <span
                         className="
                           text-xs
@@ -354,7 +331,6 @@ export default function HowItWorks() {
                       >
                         <Icon className="text-lg text-[#6DD054]" />
                       </div>
-
                     </div>
 
                     {/* Step indicator */}
@@ -407,12 +383,10 @@ export default function HowItWorks() {
                         group-hover:scale-x-100
                       "
                     />
-
                   </div>
                 </ScrollReveal>
               );
             })}
-
           </div>
         </div>
 
@@ -420,10 +394,7 @@ export default function HowItWorks() {
             SIMPLE FLOW
         ================================================== */}
 
-        <ScrollReveal
-          className="mt-24"
-          delay={100}
-        >
+        <ScrollReveal className="mt-24" delay={100}>
           <section>
             <div
               className="
@@ -436,7 +407,6 @@ export default function HowItWorks() {
                 lg:p-12
               "
             >
-
               <div
                 className="
                   grid
@@ -445,11 +415,9 @@ export default function HowItWorks() {
                   lg:grid-cols-[0.8fr_1.2fr]
                 "
               >
-
                 {/* LEFT */}
 
                 <div>
-
                   <span
                     className="
                       text-xs
@@ -472,7 +440,6 @@ export default function HowItWorks() {
                     "
                   >
                     Liquidity without
-
                     <span className="block text-[#6DD054]">
                       giving up ownership.
                     </span>
@@ -487,17 +454,15 @@ export default function HowItWorks() {
                       text-white/40
                     "
                   >
-                    Your assets remain at the center of your position.
-                    MiniLend gives you access to liquidity while your
-                    collateral remains secured.
+                    Your assets remain at the center of your position. MiniLend
+                    gives you access to liquidity while your collateral remains
+                    secured.
                   </p>
-
                 </div>
 
                 {/* RIGHT FLOW */}
 
                 <div className="grid gap-3 sm:grid-cols-4">
-
                   {flowItems.map((item, index) => {
                     const Icon = item.icon;
 
@@ -511,7 +476,6 @@ export default function HowItWorks() {
                           sm:items-center
                         "
                       >
-
                         <div
                           className="
                             flex
@@ -561,15 +525,11 @@ export default function HowItWorks() {
                             "
                           />
                         )}
-
                       </div>
                     );
                   })}
-
                 </div>
-
               </div>
-
             </div>
           </section>
         </ScrollReveal>
@@ -579,17 +539,12 @@ export default function HowItWorks() {
         ================================================== */}
 
         <section className="mt-20">
-
           <div className="grid gap-5 md:grid-cols-3">
-
             {benefits.map((benefit, index) => {
               const Icon = benefit.icon;
 
               return (
-                <ScrollReveal
-                  key={benefit.title}
-                  delay={index * 120}
-                >
+                <ScrollReveal key={benefit.title} delay={index * 120}>
                   <div
                     className="
                       group
@@ -606,7 +561,6 @@ export default function HowItWorks() {
                       hover:bg-[#6DD054]/[0.025]
                     "
                   >
-
                     <Icon
                       className="
                         text-xl
@@ -617,9 +571,7 @@ export default function HowItWorks() {
                       "
                     />
 
-                    <h3 className="mt-5 font-semibold">
-                      {benefit.title}
-                    </h3>
+                    <h3 className="mt-5 font-semibold">{benefit.title}</h3>
 
                     <p
                       className="
@@ -631,16 +583,12 @@ export default function HowItWorks() {
                     >
                       {benefit.description}
                     </p>
-
                   </div>
                 </ScrollReveal>
               );
             })}
-
           </div>
-
         </section>
-
       </div>
     </main>
   );

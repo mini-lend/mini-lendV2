@@ -1,9 +1,5 @@
 import { useState } from "react";
-import {
-  FiHelpCircle,
-  FiPlus,
-  FiMinus,
-} from "react-icons/fi";
+import { FiHelpCircle, FiPlus, FiMinus } from "react-icons/fi";
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(null);
@@ -48,7 +44,8 @@ export default function FAQ() {
   return (
     <section
       id="faq"
-      className="relative overflow-hidden bg-[#080908] py-24 text-white"
+      className="relative overflow-hidden bg-[#080908] pt-20 md:pt-34
+        pb-6 text-white"
     >
       {/* =====================================================
           AMBIENT BACKGROUND
@@ -84,13 +81,11 @@ export default function FAQ() {
       />
 
       <div className="relative mx-auto max-w-4xl px-5 sm:px-8">
-
         {/* =================================================
             HEADER
         ================================================== */}
 
         <div className="mx-auto mb-14 max-w-2xl text-center">
-
           {/* Badge */}
 
           <div
@@ -113,9 +108,7 @@ export default function FAQ() {
           >
             <FiHelpCircle />
 
-            <span>
-              Frequently Asked Questions
-            </span>
+            <span>Frequently Asked Questions</span>
           </div>
 
           {/* Heading */}
@@ -133,9 +126,7 @@ export default function FAQ() {
             "
           >
             Everything you need to know
-            <span className="text-[#6DD054]">
-              {" "}about MiniLend.
-            </span>
+            <span className="text-[#6DD054]"> about MiniLend.</span>
           </h2>
 
           {/* Description */}
@@ -151,10 +142,9 @@ export default function FAQ() {
               animate-[faqDescriptionIn_800ms_ease-out_200ms_both]
             "
           >
-            Find answers to common questions about borrowing,
-            collateral, interest, security, and supported assets.
+            Find answers to common questions about borrowing, collateral,
+            interest, security, and supported assets.
           </p>
-
         </div>
 
         {/* =================================================
@@ -162,7 +152,6 @@ export default function FAQ() {
         ================================================== */}
 
         <div className="space-y-3">
-
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
 
@@ -198,7 +187,6 @@ export default function FAQ() {
                   animationDelay: `${300 + index * 90}ms`,
                 }}
               >
-
                 {/* =================================================
                     QUESTION
                 ================================================== */}
@@ -219,9 +207,7 @@ export default function FAQ() {
                     sm:px-6
                   "
                 >
-
                   <div className="flex min-w-0 items-center gap-4">
-
                     {/* Question icon */}
 
                     <span
@@ -256,11 +242,7 @@ export default function FAQ() {
                           text-sm
                           transition-transform
                           duration-500
-                          ${
-                            isOpen
-                              ? "scale-110"
-                              : "scale-100"
-                          }
+                          ${isOpen ? "scale-110" : "scale-100"}
                         `}
                       />
                     </span>
@@ -283,7 +265,6 @@ export default function FAQ() {
                     >
                       {faq.question}
                     </span>
-
                   </div>
 
                   {/* =================================================
@@ -326,7 +307,6 @@ export default function FAQ() {
                       <FiPlus className="text-sm" />
                     )}
                   </span>
-
                 </button>
 
                 {/* =================================================
@@ -347,7 +327,6 @@ export default function FAQ() {
                   `}
                 >
                   <div className="overflow-hidden">
-
                     <div
                       className={`
                         border-t
@@ -376,14 +355,11 @@ export default function FAQ() {
                         {faq.answer}
                       </p>
                     </div>
-
                   </div>
                 </div>
-
               </div>
             );
           })}
-
         </div>
 
         {/* =================================================
@@ -409,7 +385,6 @@ export default function FAQ() {
 
           <span className="h-px w-8 bg-white/10" />
         </div>
-
       </div>
 
       {/* =====================================================

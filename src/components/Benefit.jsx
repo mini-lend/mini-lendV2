@@ -1,5 +1,5 @@
 import { useState } from "react";
-import GetStarted from "./getStarted"; // Removed curly braces since it's a default export
+import GetStarted from "./getStarted" // Removed curly braces since it's a default export
 import {
   FiArrowRight,
   FiArrowUpRight,
@@ -259,29 +259,7 @@ export default function Benefits() {
                     duration-300
                   "
                 >
-                  GET STARTED
-                  <FiArrowRight
-                    className="
-                      logo
-                      group
-                      mt-9
-                      flex
-                      h-[42px]
-                      items-center
-                      gap-3
-                      rounded-[14px]
-                      border
-                      border-[#6DD054]/50
-                      px-8
-                      text-xs
-                      text-[#6DD054]
-                      transition-all
-                      duration-300
-                      hover:-translate-y-0.5
-                      hover:bg-[#6DD054]
-                      hover:text-black
-                    "
-                  />
+                  GET STARTED                         
                 </button>
               </div>
 

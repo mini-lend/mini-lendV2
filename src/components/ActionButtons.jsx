@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import {
   FiPlus,
@@ -19,6 +20,7 @@ import WithdrawModal from "../modals/WithdrawModal";
 
 export default function ActionButtons() {
   const { address: account } = useAccount();
+
   const {
     positionData,
     hasPosition,
@@ -27,6 +29,7 @@ export default function ActionButtons() {
     healthStatus,
     loading: positionLoading,
   } = usePositionData();
+
   const { isPending } = useMLending();
 
   const [stakeModalOpen, setStakeModalOpen] = useState(false);
@@ -52,12 +55,14 @@ export default function ActionButtons() {
 
   if (!account) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-[#111111]/80 p-5">
-        <div className="flex items-center gap-3 p-4 rounded-xl border border-yellow-500/20 bg-yellow-500/5">
-          <FiAlertCircle className="text-yellow-500 shrink-0" size={20} />
+      <div className="w-full rounded-2xl border border-white/10 bg-[#111111]/80 p-5">
+        <div className="flex items-center gap-3 rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4">
+          <FiAlertCircle className="shrink-0 text-yellow-500" size={20} />
+
           <div>
             <p className="text-sm font-semibold text-white">Connect Wallet</p>
-            <p className="text-xs text-white/40 mt-1">
+
+            <p className="mt-1 text-xs text-white/40">
               Please connect your wallet to manage your position
             </p>
           </div>
@@ -68,18 +73,20 @@ export default function ActionButtons() {
 
   return (
     <>
-      <div className="rounded-2xl border border-white/10 bg-[#111111]/80 p-5">
+      <div className="w-full rounded-2xl border border-white/10 bg-[#111111]/80 p-5">
         {/* HEADER */}
         <div className="mb-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-sm font-semibold">Quick Actions</h2>
-              <p className="text-xs text-white/35 mt-1">
+
+              <p className="mt-1 text-xs text-white/35">
                 Manage your lending position
               </p>
             </div>
+
             {positionLoading && (
-              <span className="text-xs text-white/30 animate-pulse">
+              <span className="animate-pulse text-xs text-white/30">
                 Loading...
               </span>
             )}
@@ -87,7 +94,7 @@ export default function ActionButtons() {
         </div>
 
         {/* ACTIONS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
+        <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {/* STAKE */}
           <ActionButton
             icon={FiLock}
@@ -146,8 +153,9 @@ export default function ActionButtons() {
 
         {/* STATUS INDICATOR */}
         {hasPosition && (
-          <div className="mt-4 flex items-center justify-between px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.05]">
+          <div className="mt-4 flex items-center justify-between rounded-lg border border-white/[0.05] bg-white/[0.03] px-3 py-2">
             <span className="text-xs text-white/35">Position Status</span>
+
             <span
               className={`text-xs font-medium ${
                 healthFactor > 1.5
@@ -219,35 +227,36 @@ function ActionButton({
       disabled={disabled || loading}
       className={`
         group
-        text-left
+        relative
+        w-full
+        overflow-hidden
         rounded-xl
         border
         p-4
+        text-left
         transition-all
         duration-200
-        relative
-        overflow-hidden
 
         ${
           disabled && !loading
             ? `
-              opacity-50
               cursor-not-allowed
               border-white/[0.05]
               bg-white/[0.01]
+              opacity-50
             `
             : primary
               ? `
                 border-[#6DD054]/20
                 bg-[#6DD054]/[0.06]
-                hover:bg-[#6DD054]/10
                 hover:border-[#6DD054]/30
+                hover:bg-[#6DD054]/10
               `
               : `
                 border-white/[0.07]
                 bg-white/[0.025]
-                hover:bg-white/[0.05]
                 hover:border-white/10
+                hover:bg-white/[0.05]
               `
         }
 
@@ -261,7 +270,7 @@ function ActionButton({
       {/* Loading overlay */}
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-[#111111]/80">
-          <div className="w-5 h-5 border-2 border-[#6DD054] border-t-transparent rounded-full animate-spin" />
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#6DD054] border-t-transparent" />
         </div>
       )}
 
@@ -269,13 +278,14 @@ function ActionButton({
       <div className="flex items-center justify-between">
         <div
           className={`
-            w-9
-            h-9
-            rounded-lg
             flex
+            h-9
+            w-9
             items-center
             justify-center
+            rounded-lg
             transition-colors
+
             ${
               disabled && !loading
                 ? "bg-white/[0.02] text-white/25"
@@ -294,10 +304,11 @@ function ActionButton({
           className={`
             transition-all
             duration-200
+
             ${
               disabled && !loading
                 ? "text-white/10"
-                : "text-white/20 group-hover:text-[#6DD054] group-hover:translate-x-0.5"
+                : "text-white/20 group-hover:translate-x-0.5 group-hover:text-[#6DD054]"
             }
           `}
         >
@@ -325,10 +336,11 @@ function ActionButton({
 
       {/* Warning indicator */}
       {warning && !disabled && (
-        <div className="absolute top-2 right-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse" />
+        <div className="absolute right-2 top-2">
+          <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-yellow-500" />
         </div>
       )}
     </button>
   );
 }
+
