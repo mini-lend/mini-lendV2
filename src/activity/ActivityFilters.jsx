@@ -1,4 +1,3 @@
-
 import {
   FiSearch,
   FiList,
@@ -7,6 +6,7 @@ import {
   FiArrowDownLeft,
   FiRefreshCw,
   FiArrowUpRight,
+  FiAlertTriangle,
 } from "react-icons/fi";
 
 export default function ActivityFilters({
@@ -25,10 +25,6 @@ export default function ActivityFilters({
       icon: FiLock,
     },
     {
-      name: "Add Collateral",
-      icon: FiPlus,
-    },
-    {
       name: "Borrow",
       icon: FiArrowDownLeft,
     },
@@ -39,6 +35,10 @@ export default function ActivityFilters({
     {
       name: "Withdraw",
       icon: FiArrowUpRight,
+    },
+    {
+      name: "Liquidation",
+      icon: FiAlertTriangle,
     },
   ];
 
@@ -53,7 +53,6 @@ export default function ActivityFilters({
         sm:p-5
       "
     >
-
       {/* =====================================================
           FILTERS
       ====================================================== */}
@@ -67,7 +66,6 @@ export default function ActivityFilters({
           scrollbar-hide
         "
       >
-
         {filters.map((item) => {
           const Icon = item.icon;
           const active = filter === item.name;
@@ -111,24 +109,18 @@ export default function ActivityFilters({
             >
               <Icon size={14} />
 
-              <span>
-                {item.name}
-              </span>
+              <span>{item.name}</span>
             </button>
           );
         })}
-
       </div>
-
 
       {/* =====================================================
           SEARCH
       ====================================================== */}
 
       <div className="mt-4">
-
         <div className="relative">
-
           <FiSearch
             size={16}
             className="
@@ -163,12 +155,8 @@ export default function ActivityFilters({
               transition
             "
           />
-
         </div>
-
       </div>
-
     </div>
   );
 }
-

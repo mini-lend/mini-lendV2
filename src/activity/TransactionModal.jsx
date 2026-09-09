@@ -1,17 +1,7 @@
-
-import {
-  FiX,
-  FiExternalLink,
-  FiCheckCircle,
-  FiCopy,
-} from "react-icons/fi";
+import { FiX, FiExternalLink, FiCheckCircle, FiCopy } from "react-icons/fi";
 import { useState } from "react";
 
-export default function TransactionModal({
-  transaction,
-  isOpen,
-  onClose,
-}) {
+export default function TransactionModal({ transaction, isOpen, onClose }) {
   const [copied, setCopied] = useState(false);
 
   if (!isOpen || !transaction) return null;
@@ -104,7 +94,6 @@ export default function TransactionModal({
 
         {/* CONTENT */}
         <div className="p-5">
-
           {/* STATUS */}
           <div
             className="
@@ -146,7 +135,6 @@ export default function TransactionModal({
 
           {/* TRANSACTION INFO */}
           <div className="mt-5 space-y-4">
-
             <DetailRow
               label="Type"
               value={transaction.title || "Transaction"}
@@ -163,16 +151,11 @@ export default function TransactionModal({
               value={transaction.status || "Confirmed"}
             />
 
-            <DetailRow
-              label="Date"
-              value={transaction.time || "--"}
-            />
+            <DetailRow label="Date" value={transaction.time || "--"} />
 
             {/* HASH */}
             <div>
-              <p className="text-xs text-white/30 mb-2">
-                Transaction Hash
-              </p>
+              <p className="text-xs text-white/30 mb-2">Transaction Hash</p>
 
               <div
                 className="
@@ -213,12 +196,10 @@ export default function TransactionModal({
                 </p>
               )}
             </div>
-
           </div>
 
           {/* ACTIONS */}
           <div className="mt-6 flex gap-3">
-
             <button
               type="button"
               onClick={onClose}
@@ -263,41 +244,28 @@ export default function TransactionModal({
                 View on Explorer
               </button>
             )}
-
           </div>
-
         </div>
       </div>
     </div>
   );
 }
 
-
 /* =========================================================
    DETAIL ROW
 ========================================================= */
 
-function DetailRow({
-  label,
-  value,
-  highlight = false,
-}) {
+function DetailRow({ label, value, highlight = false }) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <p className="text-xs text-white/30">
-        {label}
-      </p>
+      <p className="text-xs text-white/30">{label}</p>
 
       <p
         className={`
           text-xs
           font-medium
           text-right
-          ${
-            highlight
-              ? "text-[#6DD054]"
-              : "text-white/70"
-          }
+          ${highlight ? "text-[#6DD054]" : "text-white/70"}
         `}
       >
         {value}
@@ -305,4 +273,3 @@ function DetailRow({
     </div>
   );
 }
-

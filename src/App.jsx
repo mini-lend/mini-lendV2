@@ -4,7 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing Page";
 import Dashboard from "./pages/Dashboard";
 import Markets from "./pages/Markets";
-import Activity from "./components/Activity";
+import Activity from "./pages/ActivityPage";
 import LoadingScreen from "./components/LoadingScreen";
 import WhitePaper from "./white paper/WhitePaper";
 import Documentation from "./docs/Documentation";
