@@ -8,7 +8,7 @@ import {
   FiShield,
 } from "react-icons/fi";
 
-import GetStarted from "./getStarted";
+import GetStarted from "../components/GetStarted";
 
 export default function Assets() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -54,7 +54,7 @@ export default function Assets() {
 
   return (
     <>
-      <main className="min-h-screen bg-[#080908] text-white overflow-hidden pt-32 pb-24">
+      <main className="min-h-screen bg-[#080908] text-white overflow-hidden pt-4 pb-6">
         <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
           {/* HERO */}
           <section className="text-center max-w-3xl mx-auto">

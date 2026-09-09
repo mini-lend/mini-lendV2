@@ -189,7 +189,7 @@ export default function ContactUs() {
             HEADER
         ===================================================== */}
         <ScrollReveal>
-          <div className="mx-auto mb-14 max-w-2xl text-center">
+          <div className="mx-auto mb-10 max-w-2xl text-center">
             <div
               className="
                 inline-flex items-center gap-2
