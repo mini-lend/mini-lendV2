@@ -1005,7 +1005,7 @@ export default function Hero() {
                  <div
   className="
     absolute
-    bottom-[-3%]
+    bottom-[-4%]
     left-1/2
     w-[min(245px,calc(100vw-32px))]
     rounded-2xl
