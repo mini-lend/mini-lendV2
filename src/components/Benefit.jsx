@@ -1,5 +1,5 @@
 import { useState } from "react";
-import GetStarted from "../components/GetStarted"; // Removed curly braces since it's a default export
+import GetStarted from "./getStarted" // Removed curly braces since it's a default export
 import {
   FiArrowRight,
   FiArrowUpRight,

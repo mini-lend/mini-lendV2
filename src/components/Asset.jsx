@@ -9,7 +9,7 @@ import {
   FiShield,
 } from "react-icons/fi";
 
-import GetStarted from "./GetStarted";
+import GetStarted from "./getStarted"
 
 export default function Asset() {
   const [modalOpen, setModalOpen] = useState(false);

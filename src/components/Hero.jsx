@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, useState } from "react";
-import GetStarted from "./GetStarted";
+import GetStarted from "./getStarted"
 import {
   FiArrowRight,
   FiArrowUpRight,
