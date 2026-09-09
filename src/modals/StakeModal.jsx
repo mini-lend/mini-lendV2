@@ -10,6 +10,7 @@ import {
 } from "react-icons/fi";
 import { usePositionData } from "../hooks/usePositionData";
 import { useAccount, useBalance } from "wagmi";
+import { formatEther } from "viem";
 import { useMLending } from "../hooks/useMLending";
 import ActivityResultModal from "../components/ActivityResultModal";
 
@@ -67,7 +68,7 @@ export default function StakeModal({ isOpen, onClose }) {
   // =====================================================
 
   const balance = balanceData
-    ? parseFloat(balanceData.formatted)
+    ? balanceData.value
     : 0;
 
   const currentCollateral = parseFloat(
@@ -114,6 +115,7 @@ export default function StakeModal({ isOpen, onClose }) {
       Number(amount) > balance ||
       isLoading
     ) {
+      console.log("amount:", amount, "balance:", balance);
       return;
     }
 
@@ -122,7 +124,9 @@ export default function StakeModal({ isOpen, onClose }) {
     try {
       // stakeEth waits until the blockchain transaction
       // has been confirmed successfully.
+      isPending;
       const result = await stakeEth(stakingAmount);
+      isConfirming;
 
       // Refresh dashboard/position data
       handleRefresh();
@@ -145,6 +149,7 @@ export default function StakeModal({ isOpen, onClose }) {
         asset: "ETH",
         transactionHash: result?.hash || "",
       });
+      isConfirming ;
     } catch (error) {
       console.error("Stake failed:", error);
 
@@ -263,7 +268,7 @@ export default function StakeModal({ isOpen, onClose }) {
                 <span className="text-xs text-white/40">
                   Balance:{" "}
                   <span className="text-white/70">
-                    {balance.toFixed(4)} ETH
+                    {formatEther(balance)} ETH
                   </span>
                 </span>
               </div>
@@ -275,7 +280,7 @@ export default function StakeModal({ isOpen, onClose }) {
                     type="number"
                     min="0"
                     step="0.01"
-                    value={amount}
+                    value={formatEther(amount)}
                     onChange={(e) =>
                       setAmount(e.target.value)
                     }

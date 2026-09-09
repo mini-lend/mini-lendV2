@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { parseEther, formatEther } from "viem";
 import { FiX, FiArrowUpRight, FiAlertCircle } from "react-icons/fi";
 import { usePositionData } from "../hooks/usePositionData";
 import { useMLending } from "../hooks/useMLending";
@@ -292,7 +293,7 @@ export default function WithdrawModal({ isOpen, onClose }) {
               <span className="text-xs text-white/40">
                 Available:{" "}
                 <span className="text-white/70">
-                  {available.toFixed(4)} ETH
+                  {formatEther(available)} ETH
                 </span>
               </span>
             </div>
@@ -314,7 +315,7 @@ export default function WithdrawModal({ isOpen, onClose }) {
                   min="0"
                   max={available}
                   step="0.01"
-                  value={amount}
+                  value={formatEther(amount)}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00"
                   disabled={isLoading}
@@ -381,7 +382,7 @@ export default function WithdrawModal({ isOpen, onClose }) {
                 </span>
 
                 <span className="text-xs text-white/70">
-                  {collateral.toFixed(4)} ETH
+                  {formatEther(collateral)} ETH
                 </span>
               </div>
 
@@ -392,7 +393,7 @@ export default function WithdrawModal({ isOpen, onClose }) {
                 </span>
 
                 <span className="text-xs text-white/70">
-                  {available.toFixed(4)} ETH
+                  {formatEther(available)} ETH
                 </span>
               </div>
 
@@ -403,7 +404,7 @@ export default function WithdrawModal({ isOpen, onClose }) {
                 </span>
 
                 <span className="text-xs text-white">
-                  {Math.max(0, collateral - amountNum).toFixed(4)} ETH
+                  {formatEther(Math.max(0, collateral - amountNum))} ETH
                 </span>
               </div>
 

@@ -1,92 +1,45 @@
-
 import { useState } from "react";
 import {
   FiArrowUpRight,
   FiArrowDownLeft,
-  FiPlus,
   FiRefreshCw,
   FiLock,
   FiActivity,
   FiExternalLink,
+  FiAlertTriangle,
 } from "react-icons/fi";
 
 import TransactionModal from "./TransactionModal";
 
-export default function ActivityList({ filter, search }) {
+const EVENT_ICONS = {
+  EthStaked: FiLock,
+  USDBorrowed: FiArrowDownLeft,
+  USDRepaid: FiRefreshCw,
+  ETHCollateralWithdrawn: FiArrowUpRight,
+  Liquidation: FiAlertTriangle,
+};
+
+export default function ActivityList({
+  activities = [],
+  filter,
+  search,
+  loading,
+}) {
   const [selectedTransaction, setSelectedTransaction] = useState(null);
 
-  const transactions = [
-    {
-      id: 1,
-      type: "Stake",
-      title: "ETH Staked",
-      asset: "ETH",
-      amount: "+0.50 ETH",
-      status: "Confirmed",
-      date: "Today, 10:42 AM",
-      hash: "0x8a4f...92bd",
-      icon: FiLock,
-      positive: true,
-    },
-    {
-      id: 2,
-      type: "Borrow",
-      title: "USDC Borrowed",
-      asset: "USDC",
-      amount: "+500 USDC",
-      status: "Confirmed",
-      date: "Yesterday, 4:18 PM",
-      hash: "0x71cd...45ef",
-      icon: FiArrowDownLeft,
-      positive: false,
-    },
-    {
-      id: 3,
-      type: "Repay",
-      title: "Debt Repaid",
-      asset: "USDC",
-      amount: "-200 USDC",
-      status: "Confirmed",
-      date: "Aug 25, 2:31 PM",
-      hash: "0x35ab...81ca",
-      icon: FiRefreshCw,
-      positive: true,
-    },
-    {
-      id: 4,
-      type: "Add Collateral",
-      title: "Collateral Added",
-      asset: "ETH",
-      amount: "+0.25 ETH",
-      status: "Confirmed",
-      date: "Aug 24, 11:20 AM",
-      hash: "0x91de...72aa",
-      icon: FiPlus,
-      positive: true,
-    },
-    {
-      id: 5,
-      type: "Withdraw",
-      title: "ETH Withdrawn",
-      asset: "ETH",
-      amount: "-0.20 ETH",
-      status: "Confirmed",
-      date: "Aug 23, 9:45 AM",
-      hash: "0x42fc...13be",
-      icon: FiArrowUpRight,
-      positive: false,
-    },
-  ];
+  const transactions = activities.map((activity) => ({
+    ...activity,
+    icon: EVENT_ICONS[activity.eventName] || FiActivity,
+  }));
 
   /* =====================================================
      FILTER + SEARCH
   ====================================================== */
 
-  const filteredTransactions = transactions.filter((transaction) => {
-    const matchesFilter =
-      filter === "All" || transaction.type === filter;
+  const searchValue = search.toLowerCase().trim();
 
-    const searchValue = search.toLowerCase().trim();
+  const filteredTransactions = transactions.filter((transaction) => {
+    const matchesFilter = filter === "All" || transaction.type === filter;
 
     const matchesSearch =
       !searchValue ||
@@ -97,6 +50,50 @@ export default function ActivityList({ filter, search }) {
 
     return matchesFilter && matchesSearch;
   });
+
+  /* =====================================================
+     LOADING
+  ====================================================== */
+
+  if (loading) {
+    return (
+      <div
+        className="
+          rounded-2xl
+          border
+          border-white/10
+          bg-[#111111]/80
+          px-5
+          py-16
+          text-center
+        "
+      >
+        <div
+          className="
+            mx-auto
+            w-12
+            h-12
+            rounded-2xl
+            border
+            border-white/10
+            bg-white/[0.03]
+            flex
+            items-center
+            justify-center
+            text-[#6DD054]
+          "
+        >
+          <FiRefreshCw size={20} className="animate-spin" />
+        </div>
+
+        <h3 className="mt-4 text-sm font-semibold">Loading transactions</h3>
+
+        <p className="mt-2 text-xs text-white/35 max-w-sm mx-auto">
+          Fetching your MiniLend activity from the blockchain...
+        </p>
+      </div>
+    );
+  }
 
   /* =====================================================
      EMPTY STATE
@@ -133,13 +130,10 @@ export default function ActivityList({ filter, search }) {
           <FiActivity size={20} />
         </div>
 
-        <h3 className="mt-4 text-sm font-semibold">
-          No transactions found
-        </h3>
+        <h3 className="mt-4 text-sm font-semibold">No transactions found</h3>
 
         <p className="mt-2 text-xs text-white/35 max-w-sm mx-auto">
-          There are no transactions matching your current
-          filter or search.
+          There are no transactions matching your current filter or search.
         </p>
       </div>
     );
@@ -162,8 +156,6 @@ export default function ActivityList({ filter, search }) {
           overflow-hidden
         "
       >
-        {/* TABLE HEADER */}
-
         <div
           className="
             grid
@@ -186,8 +178,6 @@ export default function ActivityList({ filter, search }) {
           <span className="text-right">Details</span>
         </div>
 
-        {/* TABLE ROWS */}
-
         {filteredTransactions.map((transaction) => {
           const Icon = transaction.icon;
 
@@ -208,10 +198,7 @@ export default function ActivityList({ filter, search }) {
                 transition
               "
             >
-              {/* TRANSACTION */}
-
               <div className="flex items-center gap-3 min-w-0">
-
                 <div
                   className="
                     w-10
@@ -231,7 +218,6 @@ export default function ActivityList({ filter, search }) {
                 </div>
 
                 <div className="min-w-0">
-
                   <p className="text-sm font-medium truncate">
                     {transaction.title}
                   </p>
@@ -239,34 +225,20 @@ export default function ActivityList({ filter, search }) {
                   <p className="text-xs text-white/30 mt-1">
                     {transaction.date}
                   </p>
-
                 </div>
-
               </div>
 
-              {/* ASSET */}
-
-              <p className="text-sm text-white/60">
-                {transaction.asset}
-              </p>
-
-              {/* AMOUNT */}
+              <p className="text-sm text-white/60">{transaction.asset}</p>
 
               <p
                 className={`
                   text-sm
                   font-semibold
-                  ${
-                    transaction.positive
-                      ? "text-[#6DD054]"
-                      : "text-white/70"
-                  }
+                  ${transaction.positive ? "text-[#6DD054]" : "text-white/70"}
                 `}
               >
                 {transaction.amount}
               </p>
-
-              {/* STATUS */}
 
               <div>
                 <span
@@ -290,15 +262,10 @@ export default function ActivityList({ filter, search }) {
                 </span>
               </div>
 
-              {/* DETAILS */}
-
               <div className="flex justify-end">
-
                 <button
                   type="button"
-                  onClick={() =>
-                    setSelectedTransaction(transaction)
-                  }
+                  onClick={() => setSelectedTransaction(transaction)}
                   className="
                     inline-flex
                     items-center
@@ -312,21 +279,17 @@ export default function ActivityList({ filter, search }) {
                   View
                   <FiExternalLink size={13} />
                 </button>
-
               </div>
-
             </div>
           );
         })}
       </div>
-
 
       {/* =====================================================
           MOBILE LIST
       ====================================================== */}
 
       <div className="md:hidden space-y-3">
-
         {filteredTransactions.map((transaction) => {
           const Icon = transaction.icon;
 
@@ -341,13 +304,8 @@ export default function ActivityList({ filter, search }) {
                 p-4
               "
             >
-
-              {/* TOP */}
-
               <div className="flex items-start justify-between gap-3">
-
                 <div className="flex items-center gap-3 min-w-0">
-
                   <div
                     className="
                       w-10
@@ -367,7 +325,6 @@ export default function ActivityList({ filter, search }) {
                   </div>
 
                   <div className="min-w-0">
-
                     <p className="text-sm font-medium truncate">
                       {transaction.title}
                     </p>
@@ -375,13 +332,8 @@ export default function ActivityList({ filter, search }) {
                     <p className="text-xs text-white/30 mt-1">
                       {transaction.date}
                     </p>
-
                   </div>
-
                 </div>
-
-
-                {/* STATUS */}
 
                 <span
                   className="
@@ -398,13 +350,9 @@ export default function ActivityList({ filter, search }) {
                   "
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[#6DD054]" />
-                  Confirmed
+                  {transaction.status}
                 </span>
-
               </div>
-
-
-              {/* DETAILS */}
 
               <div
                 className="
@@ -417,9 +365,7 @@ export default function ActivityList({ filter, search }) {
                   justify-between
                 "
               >
-
                 <div>
-
                   <p className="text-[10px] text-white/25 uppercase tracking-wider">
                     Amount
                   </p>
@@ -438,15 +384,11 @@ export default function ActivityList({ filter, search }) {
                   >
                     {transaction.amount}
                   </p>
-
                 </div>
-
 
                 <button
                   type="button"
-                  onClick={() =>
-                    setSelectedTransaction(transaction)
-                  }
+                  onClick={() => setSelectedTransaction(transaction)}
                   className="
                     inline-flex
                     items-center
@@ -460,19 +402,11 @@ export default function ActivityList({ filter, search }) {
                   View transaction
                   <FiExternalLink size={13} />
                 </button>
-
               </div>
-
             </div>
           );
         })}
-
       </div>
-
-
-      {/* =====================================================
-          TRANSACTION MODAL
-      ====================================================== */}
 
       <TransactionModal
         transaction={selectedTransaction}
@@ -481,4 +415,3 @@ export default function ActivityList({ filter, search }) {
     </>
   );
 }
-
