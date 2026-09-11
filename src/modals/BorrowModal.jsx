@@ -10,9 +10,10 @@ import {
 } from "react-icons/fi";
 import { usePositionData } from "../hooks/usePositionData";
 import { useAccount, useChainId } from "wagmi";
-import { formatEther } from "viem";
+import { formatUnits } from "viem";
 import { useMLending } from "../hooks/useMLending";
 import { TOKEN_ADDRESSES } from "../utils/chains.address";
+import { getTokenSymbol } from "../utils/tokenSelect";
 import ActivityResultModal from "../components/ActivityResultModal";
 
 export default function BorrowModal({ isOpen, onClose }) {
@@ -43,63 +44,105 @@ export default function BorrowModal({ isOpen, onClose }) {
   const chainId = useChainId();
 
   // =====================================================
+  // SUPPORTED DEBT TOKENS
+  // =====================================================
+
+  const chainTokens = TOKEN_ADDRESSES[chainId] || {};
+
+  const supportedTokens = Object.values(chainTokens);
+
+  const selectedToken = supportedTokens.find(
+    (token) => token.address.toLowerCase() === tokenAddress.toLowerCase(),
+  );
+
+  const debtToken = getTokenSymbol(chainId, tokenAddress);
+
+  const debtTokenDecimals = selectedToken?.decimals ?? 18;
+
+  // =====================================================
   // POSITION DATA
   // =====================================================
 
-  const {    
-    triggerRefresh,
-    positionData,
-    debtValue,
-    healthFactor,
-  } = usePositionData();
+  const { triggerRefresh, positionData, debtValue, healthFactor } =
+    usePositionData();
 
+  // =====================================================
+  // LENDING
+  // =====================================================
 
-  const {borrowAsset,
+  const {
+    borrowAsset,
     isPending,
     isConfirming,
-    txHash,fetchBorrowableAmount} = useMLending();
+    txHash,
+    fetchBorrowableAmount,
+  } = useMLending();
+
+  // =====================================================
+  // RESET TOKEN WHEN CHAIN CHANGES
+  // =====================================================
+
+  useEffect(() => {
+    const tokens = TOKEN_ADDRESSES[chainId];
+
+    if (!tokens) {
+      setTokenAddress("");
+      setBorrowableAmount(0);
+      return;
+    }
+
+    const tokensList = Object.values(tokens);
+
+    if (tokensList.length === 0) {
+      setTokenAddress("");
+      setBorrowableAmount(0);
+      return;
+    }
+
+    // If the currently selected token exists on this chain,
+    // keep it. Otherwise select the first supported token.
+    const currentTokenExists = tokensList.some(
+      (token) => token.address.toLowerCase() === tokenAddress.toLowerCase(),
+    );
+
+    if (!currentTokenExists) {
+      setTokenAddress(tokensList[0].address);
+      setAmount("");
+      setBorrowableAmount(0);
+    }
+  }, [chainId]);
+
+  // =====================================================
+  // FETCH BORROWABLE AMOUNT
+  // =====================================================
 
   useEffect(() => {
     if (
       !isOpen ||
       !account ||
       !chainId ||
-      !positionData?.stakedAsset
+      !positionData?.stakedAsset ||
+      !tokenAddress ||
+      !selectedToken
     ) {
       return;
     }
 
     const fetchBorrowable = async () => {
       try {
-        const chainTokens = TOKEN_ADDRESSES[chainId];
+        const amount = await fetchBorrowableAmount(account, tokenAddress);
 
-        if (!chainTokens?.link?.address) {
-          console.error(
-            "LINK token address not found for chain:",
-            chainId
-          );
-
+        if (amount === null || amount === undefined) {
           setBorrowableAmount(0);
           return;
         }
 
-        const address = chainTokens.link.address;
+        // Use the selected token's decimals.
+        const formattedAmount = formatUnits(amount, selectedToken.decimals);
 
-        setTokenAddress(address);
-
-        const amount = await fetchBorrowableAmount(
-          account,
-          address
-        );
-
-        setBorrowableAmount(
-          parseFloat(formatEther(amount))
-        );
+        setBorrowableAmount(parseFloat(formattedAmount));
       } catch (error) {
-        console.error(
-          "Failed to fetch borrowable amount:",
-          error
-        );
+        console.error("Failed to fetch borrowable amount:", error);
 
         setBorrowableAmount(0);
       }
@@ -111,8 +154,22 @@ export default function BorrowModal({ isOpen, onClose }) {
     account,
     chainId,
     positionData?.stakedAsset,
+    tokenAddress,
+    selectedToken,
     fetchBorrowableAmount,
   ]);
+
+  // =====================================================
+  // TOKEN CHANGE
+  // =====================================================
+
+  const handleTokenChange = (e) => {
+    const newTokenAddress = e.target.value;
+
+    setTokenAddress(newTokenAddress);
+    setAmount("");
+    setBorrowableAmount(0);
+  };
 
   // =====================================================
   // VALUES
@@ -120,18 +177,16 @@ export default function BorrowModal({ isOpen, onClose }) {
 
   const isLoading = isPending || isConfirming;
 
-  const currentDebt = parseFloat(
-    positionData?.debtAmount || "0"
-  );
+  const currentDebt = parseFloat(positionData?.debtAmount || "0");
 
-  const newDebt =
-    currentDebt + (Number(amount) || 0);
+  const newDebt = currentDebt + (Number(amount) || 0);
 
   const isDisabled =
     !amount ||
     Number(amount) <= 0 ||
     Number(amount) > borrowableAmount ||
     !tokenAddress ||
+    !selectedToken ||
     isLoading;
 
   // =====================================================
@@ -165,6 +220,7 @@ export default function BorrowModal({ isOpen, onClose }) {
       Number(amount) <= 0 ||
       Number(amount) > borrowableAmount ||
       !tokenAddress ||
+      !selectedToken ||
       isLoading
     ) {
       return;
@@ -173,8 +229,10 @@ export default function BorrowModal({ isOpen, onClose }) {
     const borrowingAmount = amount;
 
     try {
-      await borrowAsset(tokenAddress, amount);
+      const result = await borrowAsset(tokenAddress, amount);
+
       // await triggerRefresh();
+
       setAmount("");
 
       // Close Borrow modal
@@ -185,12 +243,11 @@ export default function BorrowModal({ isOpen, onClose }) {
         isOpen: true,
         status: "success",
         title: "Transaction Successful",
-        message:
-          "Your borrowing transaction has been successfully completed.",
+        message: "Your borrowing transaction has been successfully completed.",
         activity: "Borrow",
-        amount: `${borrowingAmount} USDC`,
-        asset: "USDC",
-        transactionHash: result?.hash || "",
+        amount: `${borrowingAmount} ${debtToken}`,
+        asset: debtToken,
+        transactionHash: result?.hash || txHash || "",
       });
     } catch (error) {
       console.error("Borrow failed:", error);
@@ -208,8 +265,8 @@ export default function BorrowModal({ isOpen, onClose }) {
           error?.message ||
           "Your borrowing transaction could not be completed. Please try again.",
         activity: "Borrow",
-        amount: `${borrowingAmount} USDC`,
-        asset: "USDC",
+        amount: `${borrowingAmount} ${debtToken}`,
+        asset: debtToken,
         transactionHash: "",
       });
     }
@@ -249,15 +306,12 @@ export default function BorrowModal({ isOpen, onClose }) {
             <div className="flex items-center justify-between px-5 py-5 border-b border-white/[0.07]">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center">
-                  <FiArrowDownLeft
-                    size={18}
-                    className="text-[#6DD054]"
-                  />
+                  <FiArrowDownLeft size={18} className="text-[#6DD054]" />
                 </div>
 
                 <div>
                   <h2 className="text-base font-semibold text-white">
-                    Borrow USDC
+                    Borrow {debtToken}
                   </h2>
 
                   <p className="text-xs text-white/35 mt-0.5">
@@ -278,17 +332,42 @@ export default function BorrowModal({ isOpen, onClose }) {
 
             {/* Body */}
             <div className="p-5">
+              {/* Debt Token */}
+              <div className="mb-4">
+                <label className="block text-xs text-white/40 mb-2">
+                  Debt token
+                </label>
+
+                <select
+                  value={tokenAddress}
+                  onChange={handleTokenChange}
+                  disabled={isLoading || supportedTokens.length === 0}
+                  className="w-full h-11 px-3 rounded-xl border border-white/10 bg-white/[0.025] text-sm text-white outline-none focus:border-[#6DD054]/40 disabled:opacity-50"
+                >
+                  {supportedTokens.length === 0 ? (
+                    <option value="">No supported debt tokens</option>
+                  ) : (
+                    supportedTokens.map((token) => (
+                      <option
+                        key={token.address}
+                        value={token.address}
+                        className="bg-[#111111]"
+                      >
+                        {token.symbol}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </div>
 
               {/* Borrow Amount */}
               <div className="flex justify-between mb-2">
-                <span className="text-xs text-white/40">
-                  Borrow amount
-                </span>
+                <span className="text-xs text-white/40">Borrow amount</span>
 
                 <span className="text-xs text-white/40">
                   Available:{" "}
                   <span className="text-white/70">
-                    {borrowableAmount.toFixed(2)} USDC
+                    {borrowableAmount.toFixed(2)} {debtToken}
                   </span>
                 </span>
               </div>
@@ -299,18 +378,18 @@ export default function BorrowModal({ isOpen, onClose }) {
                   <input
                     type="number"
                     min="0"
-                    step="1"
+                    step="any"
                     value={amount}
-                    onChange={(e) =>
-                      setAmount(e.target.value)
-                    }
+                    onChange={(e) => setAmount(e.target.value)}
                     placeholder="0"
-                    disabled={isLoading}
+                    disabled={
+                      isLoading || !tokenAddress || supportedTokens.length === 0
+                    }
                     className="w-full bg-transparent outline-none text-xl font-semibold text-white placeholder:text-white/15 disabled:opacity-50"
                   />
 
                   <span className="px-3 py-2 rounded-lg bg-white/[0.05] text-xs text-white">
-                    USDC
+                    {debtToken}
                   </span>
                 </div>
 
@@ -318,7 +397,7 @@ export default function BorrowModal({ isOpen, onClose }) {
                   <button
                     type="button"
                     onClick={handleMax}
-                    disabled={isLoading}
+                    disabled={isLoading || !tokenAddress}
                     className="text-[10px] font-semibold text-[#6DD054] hover:text-white transition disabled:opacity-50"
                   >
                     MAX
@@ -328,26 +407,21 @@ export default function BorrowModal({ isOpen, onClose }) {
 
               {/* Position */}
               <div className="mt-4 rounded-xl border border-white/[0.07] bg-white/[0.02] p-4 space-y-3">
-
                 {/* Current Debt */}
                 <div className="flex justify-between">
-                  <span className="text-xs text-white/35">
-                    Current debt
-                  </span>
+                  <span className="text-xs text-white/35">Current debt</span>
 
                   <span className="text-xs text-white/70">
-                    {currentDebt.toFixed(2)} USDC
+                    {currentDebt.toFixed(2)} {debtToken}
                   </span>
                 </div>
 
                 {/* New Debt */}
                 <div className="flex justify-between">
-                  <span className="text-xs text-white/35">
-                    New debt
-                  </span>
+                  <span className="text-xs text-white/35">New debt</span>
 
                   <span className="text-xs text-white">
-                    {newDebt.toFixed(2)} USDC
+                    {newDebt.toFixed(2)} {debtToken}
                   </span>
                 </div>
 
@@ -355,17 +429,15 @@ export default function BorrowModal({ isOpen, onClose }) {
 
                 {/* Health Factor */}
                 <div className="flex justify-between">
-                  <span className="text-xs text-white/35">
-                    Health factor
-                  </span>
+                  <span className="text-xs text-white/35">Health factor</span>
 
                   <span
                     className={`text-xs font-semibold ${
                       healthFactor > 1.2
                         ? "text-[#6DD054]"
                         : healthFactor > 1.05
-                        ? "text-yellow-500"
-                        : "text-red-500"
+                          ? "text-yellow-500"
+                          : "text-red-500"
                     }`}
                   >
                     {healthFactor === Infinity
@@ -376,9 +448,7 @@ export default function BorrowModal({ isOpen, onClose }) {
 
                 {/* Debt Value */}
                 <div className="flex justify-between">
-                  <span className="text-xs text-white/35">
-                    Debt value
-                  </span>
+                  <span className="text-xs text-white/35">Debt value</span>
 
                   <span className="text-xs text-white/70">
                     ${Number(debtValue || 0).toFixed(2)}
@@ -394,23 +464,18 @@ export default function BorrowModal({ isOpen, onClose }) {
                 />
 
                 <p className="text-[11px] leading-5 text-white/40">
-                  Ensure you have enough collateral to
-                  maintain a healthy position. Borrowing
-                  too much can lead to liquidation.
+                  Ensure you have enough collateral to maintain a healthy
+                  position. Borrowing too much can lead to liquidation.
                 </p>
               </div>
 
               {/* Transaction Status */}
               {txHash && (
                 <div className="mt-3 flex items-center gap-2 p-2 rounded-lg bg-[#6DD054]/5 border border-[#6DD054]/10">
-                  <FiCheckCircle
-                    className="text-[#6DD054]"
-                    size={14}
-                  />
+                  <FiCheckCircle className="text-[#6DD054]" size={14} />
 
                   <span className="text-xs text-white/60">
-                    Transaction:{" "}
-                    {txHash.slice(0, 6)}...
+                    Transaction: {txHash.slice(0, 6)}...
                     {txHash.slice(-4)}
                   </span>
                 </div>
@@ -418,7 +483,6 @@ export default function BorrowModal({ isOpen, onClose }) {
 
               {/* Buttons */}
               <div className="grid grid-cols-2 gap-3 mt-5">
-
                 {/* Cancel */}
                 <button
                   type="button"

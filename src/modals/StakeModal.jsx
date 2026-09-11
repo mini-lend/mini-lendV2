@@ -9,13 +9,16 @@ import {
   FiCheckCircle,
 } from "react-icons/fi";
 import { usePositionData } from "../hooks/usePositionData";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance, useChainId } from "wagmi";
 import { formatEther } from "viem";
+import { getTokenSymbol } from "../utils/tokenSelect";
 import { useMLending } from "../hooks/useMLending";
 import ActivityResultModal from "../components/ActivityResultModal";
 
 export default function StakeModal({ isOpen, onClose }) {
   const [amount, setAmount] = useState("");
+  const chainId = useChainId();
+  const nativeToken = getTokenSymbol(chainId);
 
   // =====================================================
   // REUSABLE ACTIVITY RESULT MODAL STATE
@@ -46,42 +49,26 @@ export default function StakeModal({ isOpen, onClose }) {
   // POSITION DATA
   // =====================================================
 
-  const {
-    handleRefresh,
-    positionData,
-    collateralValue,
-  } = usePositionData();
+  const { handleRefresh, positionData, collateralValue } = usePositionData();
 
   // =====================================================
   // LENDING HOOK
   // =====================================================
 
-  const {
-    isPending,
-    isConfirming,
-    txHash,
-    stakeEth,
-  } = useMLending();
+  const { isPending, isConfirming, txHash, stakeEth } = useMLending();
 
   // =====================================================
   // VALUES
   // =====================================================
 
-  const balance = balanceData
-    ? balanceData.value
-    : 0;
+  const balance = balanceData ? balanceData.value : 0;
 
-  const currentCollateral = parseFloat(
-    positionData?.stakedAmount || "0"
-  );
+  const currentCollateral = parseFloat(positionData?.stakedAmount || "0");
 
   const isLoading = isPending || isConfirming;
 
   const isDisabled =
-    !amount ||
-    Number(amount) <= 0 ||
-    Number(amount) > balance ||
-    isLoading;
+    !amount || Number(amount) <= 0 || Number(amount) > balance || isLoading;
 
   // =====================================================
   // MAX BUTTON
@@ -142,14 +129,13 @@ export default function StakeModal({ isOpen, onClose }) {
         isOpen: true,
         status: "success",
         title: "Transaction Successful",
-        message:
-          "Your ETH has been successfully added as collateral.",
+        message: "Your ETH has been successfully added as collateral.",
         activity: "Stake",
-        amount: `${stakingAmount} ETH`,
-        asset: "ETH",
+        amount: `${stakingAmount} ${nativeToken}`,
+        asset: nativeToken,
         transactionHash: result?.hash || "",
       });
-      isConfirming ;
+      isConfirming;
     } catch (error) {
       console.error("Stake failed:", error);
 
@@ -166,8 +152,8 @@ export default function StakeModal({ isOpen, onClose }) {
           error?.message ||
           "Your staking transaction could not be completed. Please try again.",
         activity: "Stake",
-        amount: `${stakingAmount} ETH`,
-        asset: "ETH",
+        amount: `${stakingAmount} ${nativeToken}`,
+        asset: nativeToken,
         transactionHash: "",
       });
     }
@@ -181,27 +167,22 @@ export default function StakeModal({ isOpen, onClose }) {
     if (isPending) return "Confirming...";
     if (isConfirming) return "Processing...";
 
-    return "Stake ETH";
+    return `Stake ${nativeToken}`;
   };
 
   // =====================================================
   // DISPLAY VALUES
   // =====================================================
 
-  const afterStaking =
-    currentCollateral + (Number(amount) || 0);
+  const afterStaking = currentCollateral + (Number(amount) || 0);
 
-  const currentCollateralValue =
-    Number(collateralValue) || 0;
+  const currentCollateralValue = Number(collateralValue) || 0;
 
   const ethPrice =
-    currentCollateral > 0
-      ? currentCollateralValue / currentCollateral
-      : 0;
+    currentCollateral > 0 ? currentCollateralValue / currentCollateral : 0;
 
   const afterStakingValue =
-    currentCollateralValue +
-    (Number(amount) || 0) * ethPrice;
+    currentCollateralValue + (Number(amount) || 0) * ethPrice;
 
   // =====================================================
   // RENDER
@@ -229,19 +210,16 @@ export default function StakeModal({ isOpen, onClose }) {
             <div className="flex items-center justify-between px-5 py-5 border-b border-white/[0.07]">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#6DD054]/10 border border-[#6DD054]/20 flex items-center justify-center">
-                  <FiLock
-                    size={18}
-                    className="text-[#6DD054]"
-                  />
+                  <FiLock size={18} className="text-[#6DD054]" />
                 </div>
 
                 <div>
                   <h2 className="text-base font-semibold text-white">
-                    Stake ETH
+                    Stake {nativeToken}
                   </h2>
 
                   <p className="text-xs text-white/35 mt-0.5">
-                    Add ETH as collateral
+                    Add {nativeToken} as collateral
                   </p>
                 </div>
               </div>
@@ -258,17 +236,14 @@ export default function StakeModal({ isOpen, onClose }) {
 
             {/* Body */}
             <div className="p-5">
-
               {/* Balance */}
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-white/40">
-                  Amount
-                </span>
+                <span className="text-xs text-white/40">Amount</span>
 
                 <span className="text-xs text-white/40">
                   Balance:{" "}
                   <span className="text-white/70">
-                    {formatEther(balance)} ETH
+                    {`${formatEther(balance)} ${nativeToken}`}
                   </span>
                 </span>
               </div>
@@ -281,9 +256,7 @@ export default function StakeModal({ isOpen, onClose }) {
                     min="0"
                     step="0.01"
                     value={formatEther(amount)}
-                    onChange={(e) =>
-                      setAmount(e.target.value)
-                    }
+                    onChange={(e) => setAmount(e.target.value)}
                     placeholder="0.00"
                     disabled={isLoading}
                     className="w-full bg-transparent outline-none text-xl font-semibold text-white placeholder:text-white/15 disabled:opacity-50"
@@ -294,9 +267,7 @@ export default function StakeModal({ isOpen, onClose }) {
                       Ξ
                     </div>
 
-                    <span className="text-xs font-medium">
-                      ETH
-                    </span>
+                    <span className="text-xs font-medium">{nativeToken}</span>
                   </div>
                 </div>
 
@@ -314,7 +285,6 @@ export default function StakeModal({ isOpen, onClose }) {
 
               {/* Info */}
               <div className="mt-4 rounded-xl border border-white/[0.07] bg-white/[0.02] p-4 space-y-3">
-
                 {/* Current Collateral */}
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-white/35">
@@ -322,18 +292,16 @@ export default function StakeModal({ isOpen, onClose }) {
                   </span>
 
                   <span className="text-xs font-medium text-white/70">
-                    {currentCollateral.toFixed(4)} ETH
+                    {`${currentCollateral.toFixed(4)} ${nativeToken}`}
                   </span>
                 </div>
 
                 {/* After Staking */}
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-white/35">
-                    After staking
-                  </span>
+                  <span className="text-xs text-white/35">After staking</span>
 
                   <span className="text-xs font-medium text-white">
-                    {afterStaking.toFixed(4)} ETH
+                    {`${afterStaking.toFixed(4)} ${nativeToken}`}
                   </span>
                 </div>
 
@@ -359,23 +327,18 @@ export default function StakeModal({ isOpen, onClose }) {
                 />
 
                 <p className="text-[11px] leading-5 text-white/40">
-                  Your ETH will be locked as collateral and can
-                  be withdrawn later as long as your position
-                  remains healthy.
+                  Your {nativeToken} will be locked as collateral and can be
+                  withdrawn later as long as your position remains healthy.
                 </p>
               </div>
 
               {/* Transaction Status */}
               {txHash && (
                 <div className="mt-3 flex items-center gap-2 p-2 rounded-lg bg-[#6DD054]/5 border border-[#6DD054]/10">
-                  <FiCheckCircle
-                    className="text-[#6DD054]"
-                    size={14}
-                  />
+                  <FiCheckCircle className="text-[#6DD054]" size={14} />
 
                   <span className="text-xs text-white/60">
-                    Transaction:{" "}
-                    {txHash.slice(0, 6)}...
+                    Transaction: {txHash.slice(0, 6)}...
                     {txHash.slice(-4)}
                   </span>
                 </div>
@@ -383,7 +346,6 @@ export default function StakeModal({ isOpen, onClose }) {
 
               {/* Buttons */}
               <div className="grid grid-cols-2 gap-3 mt-5">
-
                 {/* Cancel */}
                 <button
                   type="button"
