@@ -96,7 +96,7 @@ export default function DashboardHeader({ onMenuClick }) {
           {/* RIGHT SIDE */}
           <div className="flex items-center gap-3">
             {/* NOTIFICATION */}
-            <button
+            {/* <button
               type="button"
               aria-label="Notifications"
               className="
@@ -130,7 +130,7 @@ export default function DashboardHeader({ onMenuClick }) {
                   bg-[#6DD054]
                 "
               />
-            </button>
+            </button> */}
 
             {/* MOBILE DISCONNECT */}
             {/* <button
