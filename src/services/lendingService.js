@@ -450,6 +450,12 @@ export const getBorrowableAmount = async ({
   chainId,
   publicClient,
 }) => {
+    console.log(
+    "token Address:",
+    tokenAddress,
+    "Address Type:",
+    typeof tokenAddress,
+  );
   const address = getLendingContract(chainId);
 
   const amount = await publicClient.readContract({
